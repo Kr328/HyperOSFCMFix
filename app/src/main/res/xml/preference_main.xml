@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:key="shizuku_state"
+        android:persistent="false"
+        android:title="@string/shizuku_state" />
+    <SwitchPreference
+        android:key="service_enabled"
+        android:enabled="false"
+        android:persistent="false"
+        android:summary="@string/service_enabled_summary"
+        android:title="@string/service_enabled" />
+    <Preference
+        android:key="battery_optimization_allowlist"
+        android:enabled="false"
+        android:persistent="false"
+        android:summary="@string/battery_optimization_allowlist_summary"
+        android:title="@string/battery_optimization_allowlist" />
+</PreferenceScreen>

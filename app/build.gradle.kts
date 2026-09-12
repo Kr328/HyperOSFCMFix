@@ -1,0 +1,44 @@
+plugins {
+    alias(libs.plugins.android.application)
+}
+
+android {
+    namespace = "com.github.kr328.simplefcmfix"
+
+    enableKotlin = false
+
+    defaultConfig {
+        applicationId = "com.github.kr328.simplefcmfix"
+        versionCode = 1
+        versionName = "1.0"
+    }
+
+    buildFeatures {
+        aidl = true
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
+        }
+    }
+
+    packaging {
+        resources {
+            excludes.add("kotlin/**")
+        }
+    }
+}
+
+dependencies {
+    compileOnly(project(":hideapi"))
+
+    implementation(libs.androidx.annotation)
+    implementation(libs.shizuku.api)
+    implementation(libs.shizuku.provider)
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppActionBar" parent="android:Widget.Material.Light.ActionBar">
+        <item name="android:background">@color/color_background</item>
+    </style>
+
+    <style name="AppTheme" parent="android:Theme.Material.Light">
+        <item name="android:colorPrimary">@color/color_primary</item>
+        <item name="android:colorPrimaryDark">@color/color_primary</item>
+        <item name="android:colorSecondary">@color/color_secondary</item>
+        <item name="android:colorAccent">@color/color_primary</item>
+        <item name="android:colorBackground">@color/color_background</item>
+        <item name="android:colorForeground">@color/color_foreground</item>
+        <item name="android:actionBarStyle">@style/AppActionBar</item>
+        <item name="android:windowBackground">@color/color_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:enforceStatusBarContrast">false</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
+        <item name="android:forceDarkAllowed">false</item>
+    </style>
+</resources>

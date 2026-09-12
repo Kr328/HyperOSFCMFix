@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Simple FCM Fix</string>
+    <string name="shizuku_state">Shizuku 状态</string>
+    <string name="shizuku_state_unavailable">Shizuku 不可用。</string>
+    <string name="shizuku_state_no_permission">尚未授予 Shizuku 权限。</string>
+    <string name="shizuku_state_starting">Shizuku UserService 正在启动…</string>
+    <string name="shizuku_state_start_failed">Shizuku UserService 启动失败，点击重新启动。</string>
+    <string name="shizuku_state_ready">Shizuku UserService 已就绪。</string>
+    <string name="service_enabled">启用服务</string>
+    <string name="service_enabled_summary">自动将 GMS 加入电池优化白名单。</string>
+    <string name="battery_optimization_allowlist">电池优化白名单</string>
+    <string name="battery_optimization_allowlist_summary">查看电池优化白名单中的应用。</string>
+    <string name="unknown_app">未知应用</string>
+    <string name="unsupported_system">当前应用仅限中国大陆的 HyperOS 使用</string>
+    <string name="service_start_notification_channel">服务启动提醒</string>
+    <string name="service_start_notification_title">FCM Fix 服务需要启动</string>
+    <string name="service_start_notification_boot_content">当前系统已重启，您需要在 Shizuku 就绪后重新启动 FCM Fix 服务。</string>
+    <string name="service_start_notification_update_content">当前应用已更新，您需要在 Shizuku 就绪后重新启动 FCM Fix 服务。</string>
+</resources>

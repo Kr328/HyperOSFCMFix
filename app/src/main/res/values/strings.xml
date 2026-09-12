@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Simple FCM Fix</string>
+    <string name="shizuku_state">Shizuku Status</string>
+    <string name="shizuku_state_unavailable">Shizuku unavailable.</string>
+    <string name="shizuku_state_no_permission">Shizuku permission not granted.</string>
+    <string name="shizuku_state_starting">Shizuku UserService is starting…</string>
+    <string name="shizuku_state_start_failed">Failed to start Shizuku UserService. Tap to restart.</string>
+    <string name="shizuku_state_ready">Shizuku UserService is ready.</string>
+    <string name="service_enabled">Enable service</string>
+    <string name="service_enabled_summary">Automatically add GMS to the battery optimization allowlist.</string>
+    <string name="battery_optimization_allowlist">Battery optimization allowlist</string>
+    <string name="battery_optimization_allowlist_summary">View apps in the battery optimization allowlist.</string>
+    <string name="unknown_app">Unknown app</string>
+    <string name="unsupported_system">This app is only available on HyperOS devices in mainland China.</string>
+    <string name="service_start_notification_channel">Service start reminders</string>
+    <string name="service_start_notification_title">FCM Fix service needs to be started</string>
+    <string name="service_start_notification_boot_content">The system has restarted. Restart the FCM Fix service after Shizuku is ready.</string>
+    <string name="service_start_notification_update_content">The app has been updated. Restart the FCM Fix service after Shizuku is ready.</string>
+</resources>
