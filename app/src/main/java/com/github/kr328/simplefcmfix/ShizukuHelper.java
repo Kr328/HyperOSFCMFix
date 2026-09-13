@@ -38,7 +38,8 @@ public final class ShizukuHelper implements ServiceConnection, Shizuku.OnBinderD
         this.userServiceArgs = new Shizuku.UserServiceArgs(
                 new ComponentName(context, ShizukuRemote.class))
                 .daemon(true)
-                .debuggable(false)
+                .debuggable(BuildConfig.DEBUG)
+                .version(BuildConfig.VERSION_CODE)
                 .processNameSuffix("shizuku");
 
         Shizuku.addBinderDeadListener(this);

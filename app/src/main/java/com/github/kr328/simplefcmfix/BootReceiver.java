@@ -9,8 +9,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.SystemClock;
 
 public final class BootReceiver extends BroadcastReceiver {
+    private static final long MAX_ALLOWED_BOOT_COMPLETED_UPTIME = 10 * 60 * 1000;
+
     private static final String NOTIFICATION_CHANNEL_ID = "service_start";
     private static final int NOTIFICATION_ID = 1;
 
@@ -18,6 +21,10 @@ public final class BootReceiver extends BroadcastReceiver {
     public void onReceive(final Context context, final Intent intent) {
         final int contentResource;
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
+            if (SystemClock.elapsedRealtime() > MAX_ALLOWED_BOOT_COMPLETED_UPTIME) {
+                return;
+            }
+
             contentResource = R.string.service_start_notification_boot_content;
         } else if (Intent.ACTION_MY_PACKAGE_REPLACED.equals(intent.getAction())) {
             contentResource = R.string.service_start_notification_update_content;
