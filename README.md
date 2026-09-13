@@ -1,6 +1,6 @@
 # SimpleFCMFix for HyperOS (CN)
 
-本应用为中国大陆 HyperOS 修复 FCM 意外断开问题。
+本应用为中国大陆 HyperOS 修复 FCM 意外断开问题。\(需要 [Shizuku](https://github.com/RikkaApps/Shizuku)\)
 
 参考自 [dingwen07/hyperos-fcm-fix](https://github.com/dingwen07/hyperos-fcm-fix)
 
@@ -11,4 +11,4 @@
 ### 构建
 
 1. 使用 Android Studio 打开项目
-2. 点击 "Build" -> "Generate Signed APK"
+2. 点击 "Build" → "Generate Signed APK"
