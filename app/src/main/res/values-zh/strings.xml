@@ -12,6 +12,11 @@
     <string name="battery_optimization_allowlist">电池优化白名单</string>
     <string name="battery_optimization_allowlist_summary">查看电池优化白名单中的应用。</string>
     <string name="unknown_app">未知应用</string>
+    <string name="history">历史记录</string>
+    <string name="history_summary">查看最近的服务操作。</string>
+    <string name="history_action_inject">注入 GMS</string>
+    <string name="history_action_remove">移除 GMS</string>
+    <string name="history_action_reconnect">请求 FCM 重连</string>
     <string name="unsupported_system">当前应用仅限中国大陆的 HyperOS 使用</string>
     <string name="service_start_notification_channel">服务启动提醒</string>
     <string name="service_start_notification_title">FCM Fix 服务需要启动</string>

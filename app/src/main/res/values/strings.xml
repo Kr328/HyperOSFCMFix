@@ -12,6 +12,11 @@
     <string name="battery_optimization_allowlist">Battery optimization allowlist</string>
     <string name="battery_optimization_allowlist_summary">View apps in the battery optimization allowlist.</string>
     <string name="unknown_app">Unknown app</string>
+    <string name="history">History</string>
+    <string name="history_summary">View recent service actions.</string>
+    <string name="history_action_inject">Inject GMS</string>
+    <string name="history_action_remove">Remove GMS</string>
+    <string name="history_action_reconnect">Request FCM reconnect</string>
     <string name="unsupported_system">This app is only available on HyperOS devices in mainland China.</string>
     <string name="service_start_notification_channel">Service start reminders</string>
     <string name="service_start_notification_title">FCM Fix service needs to be started</string>

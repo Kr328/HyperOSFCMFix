@@ -16,4 +16,10 @@
         android:persistent="false"
         android:summary="@string/battery_optimization_allowlist_summary"
         android:title="@string/battery_optimization_allowlist" />
+    <Preference
+        android:key="history"
+        android:enabled="false"
+        android:persistent="false"
+        android:summary="@string/history_summary"
+        android:title="@string/history" />
 </PreferenceScreen>

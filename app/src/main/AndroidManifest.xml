@@ -29,6 +29,11 @@
             android:exported="false"
             android:label="@string/battery_optimization_allowlist"
             android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".HistoryActivity"
+            android:exported="false"
+            android:label="@string/history"
+            android:parentActivityName=".MainActivity" />
 
         <receiver
             android:name=".BootReceiver"

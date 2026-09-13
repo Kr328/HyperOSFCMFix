@@ -131,6 +131,14 @@ public final class MainActivity extends Activity {
 
                 return true;
             });
+
+            final Preference history = findPreference("history");
+            history.setEnabled(false);
+            history.setOnPreferenceClickListener(preference -> {
+                startActivity(new Intent(getActivity(), HistoryActivity.class));
+
+                return true;
+            });
         }
 
         @Override
@@ -195,6 +203,8 @@ public final class MainActivity extends Activity {
             }
 
             findPreference("battery_optimization_allowlist")
+                    .setEnabled(state instanceof ShizukuHelper.State.Ready);
+            findPreference("history")
                     .setEnabled(state instanceof ShizukuHelper.State.Ready);
             updateServiceEnabledPreference();
         }
