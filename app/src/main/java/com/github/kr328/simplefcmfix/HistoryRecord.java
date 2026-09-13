@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-public record HistoryRecord(long timestamp, Action action) implements Parcelable {
+public record HistoryRecord(long timestamp, Action action, Cause cause) implements Parcelable {
     public static final Creator<HistoryRecord> CREATOR = new Creator<>() {
         @Override
         public HistoryRecord createFromParcel(final Parcel in) {
@@ -19,7 +19,7 @@ public record HistoryRecord(long timestamp, Action action) implements Parcelable
     };
 
     public HistoryRecord(final Parcel in) {
-        this(in.readLong(), Action.values()[in.readInt()]);
+        this(in.readLong(), Action.values()[in.readInt()], Cause.values()[in.readInt()]);
     }
 
     @Override
@@ -31,11 +31,18 @@ public record HistoryRecord(long timestamp, Action action) implements Parcelable
     public void writeToParcel(@NonNull final Parcel dest, final int flags) {
         dest.writeLong(timestamp);
         dest.writeInt(action.ordinal());
+        dest.writeInt(cause.ordinal());
     }
 
     public enum Action {
         INJECT,
         REMOVE,
         RECONNECT,
+    }
+
+    public enum Cause {
+        MANUAL,
+        EVENT,
+        WATCHDOG,
     }
 }

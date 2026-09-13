@@ -31,7 +31,7 @@ public final class ShizukuRemote extends IShizukuRemote.Stub {
     @NonNull
     private final Context context;
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private final MilletObserver observer = new MilletObserver(() -> handler.post(this::injectGMSIntoNoRestrictApps));
+    private final MilletObserver observer = new MilletObserver(() -> handler.post(() -> injectGMSIntoNoRestrictApps(HistoryRecord.Cause.EVENT)));
     private final History history = new History();
     private boolean started = false;
 
@@ -47,8 +47,8 @@ public final class ShizukuRemote extends IShizukuRemote.Stub {
         }
     }
 
-    private void injectGMSIntoNoRestrictApps() {
-        Log.d("ShizukuRemote", "injectGMSIntoNoRestrictApps");
+    private void injectGMSIntoNoRestrictApps(@NonNull final HistoryRecord.Cause cause) {
+        Log.d("ShizukuRemote", "injectGMSIntoNoRestrictApps: " + cause);
 
         final List<String> original = MilletHelper.getMilletNoRestrictApps(context);
         if (original.contains("com.google.android.gms")) {
@@ -67,12 +67,12 @@ public final class ShizukuRemote extends IShizukuRemote.Stub {
         }
 
         synchronized (history) {
-            history.addRecord(new HistoryRecord(System.currentTimeMillis(), HistoryRecord.Action.INJECT));
+            history.addRecord(new HistoryRecord(System.currentTimeMillis(), HistoryRecord.Action.INJECT, cause));
         }
     }
 
-    private void removeGMSFromNoRestrictApps() {
-        Log.d("ShizukuRemote", "removeGMSFromNoRestrictApps");
+    private void removeGMSFromNoRestrictApps(@NonNull final HistoryRecord.Cause cause) {
+        Log.d("ShizukuRemote", "removeGMSFromNoRestrictApps: " + cause);
 
         final List<String> original = MilletHelper.getMilletNoRestrictApps(context);
         if (!original.remove("com.google.android.gms")) {
@@ -81,12 +81,12 @@ public final class ShizukuRemote extends IShizukuRemote.Stub {
         MilletHelper.setMilletNoRestrictApps(context, original);
 
         synchronized (history) {
-            history.addRecord(new HistoryRecord(System.currentTimeMillis(), HistoryRecord.Action.REMOVE));
+            history.addRecord(new HistoryRecord(System.currentTimeMillis(), HistoryRecord.Action.REMOVE, cause));
         }
     }
 
-    private void requestGMSReconnect() {
-        Log.d("ShizukuRemote", "requestGMSReconnect");
+    private void requestGMSReconnect(@NonNull final HistoryRecord.Cause cause) {
+        Log.d("ShizukuRemote", "requestGMSReconnect: " + cause);
 
         try {
             if (FCMHelper.isFcmConnected(context)) {
@@ -96,7 +96,7 @@ public final class ShizukuRemote extends IShizukuRemote.Stub {
             FCMHelper.requestReconnect(context);
 
             synchronized (history) {
-                history.addRecord(new HistoryRecord(System.currentTimeMillis(), HistoryRecord.Action.RECONNECT));
+                history.addRecord(new HistoryRecord(System.currentTimeMillis(), HistoryRecord.Action.RECONNECT, cause));
             }
         } catch (final Exception e) {
             Log.e("ShizukuRemote", "requestGMSReconnect", e);
@@ -104,9 +104,9 @@ public final class ShizukuRemote extends IShizukuRemote.Stub {
     }
 
     private void scheduledWatchdogTask() {
-        injectGMSIntoNoRestrictApps();
+        injectGMSIntoNoRestrictApps(HistoryRecord.Cause.WATCHDOG);
 
-        requestGMSReconnect();
+        requestGMSReconnect(HistoryRecord.Cause.WATCHDOG);
 
         handler.postDelayed(this::scheduledWatchdogTask, WATCHDOG_PERIOD);
     }
@@ -128,7 +128,9 @@ public final class ShizukuRemote extends IShizukuRemote.Stub {
         }
 
         try {
-            injectGMSIntoNoRestrictApps();
+            injectGMSIntoNoRestrictApps(HistoryRecord.Cause.MANUAL);
+
+            requestGMSReconnect(HistoryRecord.Cause.MANUAL);
 
             observer.start();
 
@@ -151,7 +153,7 @@ public final class ShizukuRemote extends IShizukuRemote.Stub {
         try {
             handler.removeMessages(0);
 
-            removeGMSFromNoRestrictApps();
+            removeGMSFromNoRestrictApps(HistoryRecord.Cause.MANUAL);
 
             observer.stop();
 

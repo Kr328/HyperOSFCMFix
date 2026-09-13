@@ -17,6 +17,10 @@
     <string name="history_action_inject">Inject GMS</string>
     <string name="history_action_remove">Remove GMS</string>
     <string name="history_action_reconnect">Request FCM reconnect</string>
+    <string name="history_cause_manual">User Request</string>
+    <string name="history_cause_event">Event</string>
+    <string name="history_cause_watchdog">Scheduled check</string>
+    <string name="history_item_title">%1$s (%2$s)</string>
     <string name="unsupported_system">This app is only available on HyperOS devices in mainland China.</string>
     <string name="service_start_notification_channel">Service start reminders</string>
     <string name="service_start_notification_title">FCM Fix service needs to be started</string>

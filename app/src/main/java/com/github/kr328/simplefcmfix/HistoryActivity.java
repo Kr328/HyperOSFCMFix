@@ -194,7 +194,10 @@ public final class HistoryActivity extends Activity
             }
 
             final HistoryRecord item = getItem(position);
-            holder.title.setText(actionTitle(item.action()));
+            holder.title.setText(context.getString(
+                    R.string.history_item_title,
+                    context.getString(actionTitle(item.action())),
+                    context.getString(causeTitle(item.cause()))));
             holder.subtitle.setText(DateUtils.formatDateTime(
                     context,
                     item.timestamp(),
@@ -210,6 +213,14 @@ public final class HistoryActivity extends Activity
                 case INJECT -> R.string.history_action_inject;
                 case REMOVE -> R.string.history_action_remove;
                 case RECONNECT -> R.string.history_action_reconnect;
+            };
+        }
+
+        private int causeTitle(@NonNull final HistoryRecord.Cause cause) {
+            return switch (cause) {
+                case MANUAL -> R.string.history_cause_manual;
+                case EVENT -> R.string.history_cause_event;
+                case WATCHDOG -> R.string.history_cause_watchdog;
             };
         }
     }

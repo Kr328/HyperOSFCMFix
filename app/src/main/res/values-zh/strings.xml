@@ -17,6 +17,10 @@
     <string name="history_action_inject">注入 GMS</string>
     <string name="history_action_remove">移除 GMS</string>
     <string name="history_action_reconnect">请求 FCM 重连</string>
+    <string name="history_cause_manual">用户请求</string>
+    <string name="history_cause_event">事件触发</string>
+    <string name="history_cause_watchdog">定时检查</string>
+    <string name="history_item_title">%1$s (%2$s)</string>
     <string name="unsupported_system">当前应用仅限中国大陆的 HyperOS 使用</string>
     <string name="service_start_notification_channel">服务启动提醒</string>
     <string name="service_start_notification_title">FCM Fix 服务需要启动</string>
