@@ -1,6 +1,6 @@
 package com.github.kr328.simplefcmfix;
 
-import android.app.Application;
+import android.app.AlarmManager;
 import android.content.Context;
 import android.os.Handler;
 import android.os.IPowerManager;
@@ -31,19 +31,22 @@ public final class ShizukuRemote extends IShizukuRemote.Stub {
     @NonNull
     private final Context context;
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private final MilletObserver observer = new MilletObserver(() -> handler.post(() -> injectGMSIntoNoRestrictApps(HistoryRecord.Cause.EVENT)));
     private final History history = new History();
+    private final MilletObserver observer = new MilletObserver(() -> handler.post(() -> injectGMSIntoNoRestrictApps(HistoryRecord.Cause.EVENT)));
+    private final AlarmManager.OnAlarmListener watchdog = () -> handler.post(this::doWatchdogTask);
     private boolean started = false;
 
     public ShizukuRemote(@NonNull final Context context) {
-        this.context = context;
-
         try {
-            Compat.applyNewPackageNameToContextImpl(((Application) context.getApplicationContext()).getBaseContext(), "com.android.shell");
-        } catch (final Exception e) {
-            Log.e("ShizukuRemote", "Compat.applyNewPackageNameToContextImpl", e);
+            final ShizukuContext shizukuContext = new ShizukuContext(context);
 
-            System.exit(1);
+            this.context = shizukuContext;
+
+            Log.d("ShizukuRemote", "Context[packageName=" + shizukuContext.getEffectiveContext().getPackageName() + ",opPackageName=" + shizukuContext.getEffectiveContext().getOpPackageName() + "]");
+        } catch (final Exception e) {
+            Log.e("ShizukuRemote", "createPackageContext(com.android.shell)", e);
+
+            throw new Error(e);
         }
     }
 
@@ -103,16 +106,29 @@ public final class ShizukuRemote extends IShizukuRemote.Stub {
         }
     }
 
-    private void scheduledWatchdogTask() {
+    private void doWatchdogTask() {
         injectGMSIntoNoRestrictApps(HistoryRecord.Cause.WATCHDOG);
 
         requestGMSReconnect(HistoryRecord.Cause.WATCHDOG);
 
-        handler.postDelayed(this::scheduledWatchdogTask, WATCHDOG_PERIOD);
+        scheduleWatchdogTask();
+    }
+
+    private void scheduleWatchdogTask() {
+        context.getSystemService(AlarmManager.class)
+                .set(
+                        AlarmManager.ELAPSED_REALTIME,
+                        SystemClock.elapsedRealtime() + WATCHDOG_PERIOD,
+                        "SimpleFCMFix:watchdog",
+                        watchdog,
+                        handler
+                );
     }
 
     @Override
     public void destroy() {
+        stop();
+
         System.exit(0);
     }
 
@@ -132,13 +148,13 @@ public final class ShizukuRemote extends IShizukuRemote.Stub {
 
             requestGMSReconnect(HistoryRecord.Cause.MANUAL);
 
-            observer.start();
+            scheduleWatchdogTask();
 
-            handler.postDelayed(this::scheduledWatchdogTask, WATCHDOG_PERIOD);
+            observer.start();
 
             started = true;
         } catch (final Exception e) {
-            Log.e("ShizukuRemote", "MilletObserver.start", e);
+            Log.e("ShizukuRemote", "start", e);
 
             throw new SecurityException(e.getMessage(), e);
         }
@@ -151,7 +167,7 @@ public final class ShizukuRemote extends IShizukuRemote.Stub {
         }
 
         try {
-            handler.removeMessages(0);
+            context.getSystemService(AlarmManager.class).cancel(watchdog);
 
             removeGMSFromNoRestrictApps(HistoryRecord.Cause.MANUAL);
 
@@ -159,7 +175,7 @@ public final class ShizukuRemote extends IShizukuRemote.Stub {
 
             started = false;
         } catch (final Exception e) {
-            Log.e("ShizukuRemote", "MilletObserver.stop", e);
+            Log.e("ShizukuRemote", "stop", e);
 
             throw new SecurityException(e.getMessage(), e);
         }

@@ -34,6 +34,19 @@ public final class HistoryActivity extends Activity
     private HistoryAdapter adapter;
     private int loadGeneration;
 
+    @NonNull
+    private static List<HistoryRecord> reverse(@Nullable final HistoryRecord[] records) {
+        if (records == null) {
+            return List.of();
+        }
+
+        final ArrayList<HistoryRecord> result = new ArrayList<>(records.length);
+        for (int i = records.length - 1; i >= 0; --i) {
+            result.add(records[i]);
+        }
+        return result;
+    }
+
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,19 +140,6 @@ public final class HistoryActivity extends Activity
                 });
             }
         });
-    }
-
-    @NonNull
-    private static List<HistoryRecord> reverse(@Nullable final HistoryRecord[] records) {
-        if (records == null) {
-            return List.of();
-        }
-
-        final ArrayList<HistoryRecord> result = new ArrayList<>(records.length);
-        for (int i = records.length - 1; i >= 0; --i) {
-            result.add(records[i]);
-        }
-        return result;
     }
 
     private static final class HistoryAdapter extends BaseAdapter {

@@ -93,13 +93,22 @@ public final class Compat {
         );
     }
 
-    public static void applyNewPackageNameToContextImpl(@NonNull final Context context, @NonNull final String newPackageName) throws ReflectiveOperationException {
-        final Field attributionSourceField = context.getClass().getDeclaredField("mAttributionSource");
+    public static void fixContextImplOpPackage(@NonNull final Context context) throws ReflectiveOperationException {
+        final Class<?> contextImpl = context.getClass();
+        assert contextImpl.getName().equals("android.app.ContextImpl");
+
+        final String packageName = context.getPackageName();
+
+        final Field attributionSourceField = contextImpl.getDeclaredField("mAttributionSource");
         attributionSourceField.setAccessible(true);
         final AttributionSource attributionSource = (AttributionSource) attributionSourceField.get(context);
 
         final Method withPackageNameMethod = AttributionSource.class.getMethod("withPackageName", String.class);
-        final AttributionSource newAttributionSource = (AttributionSource) withPackageNameMethod.invoke(attributionSource, newPackageName);
+        final AttributionSource newAttributionSource = (AttributionSource) withPackageNameMethod.invoke(attributionSource, packageName);
         attributionSourceField.set(context, newAttributionSource);
+
+        final Field opPackageField = contextImpl.getDeclaredField("mOpPackageName");
+        opPackageField.setAccessible(true);
+        opPackageField.set(context, packageName);
     }
 }

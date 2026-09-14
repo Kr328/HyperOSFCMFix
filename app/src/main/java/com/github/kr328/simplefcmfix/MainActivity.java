@@ -30,6 +30,15 @@ import java.util.Objects;
  */
 @SuppressWarnings("deprecation")
 public final class MainActivity extends Activity {
+    private static boolean isSupportedSystem() {
+        try {
+            return "CN".equals(SystemProperties.get("ro.vendor.miui.region"))
+                    && !TextUtils.isEmpty(SystemProperties.get("ro.mi.os.version.name"));
+        } catch (final RuntimeException | LinkageError ignored) {
+            return false;
+        }
+    }
+
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,15 +72,6 @@ public final class MainActivity extends Activity {
                     .beginTransaction()
                     .replace(R.id.preferences, new MainFragment())
                     .commit();
-        }
-    }
-
-    private static boolean isSupportedSystem() {
-        try {
-            return "CN".equals(SystemProperties.get("ro.vendor.miui.region"))
-                    && !TextUtils.isEmpty(SystemProperties.get("ro.mi.os.version.name"));
-        } catch (final RuntimeException | LinkageError ignored) {
-            return false;
         }
     }
 
