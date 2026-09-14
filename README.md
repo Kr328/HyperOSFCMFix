@@ -8,6 +8,12 @@
 
 向 Settings.System."MILLET_NO_RESTRICT_APP" 中注入 "com.google.android.gms"。
 
+### 特性
+
+1. 小，大约 100 KiB。
+2. 无需短轮询，基于 Logcat 获取事件快速注入 GMS，同时保留 10min 一次的兜底检测和 FCM 连接检测。
+3. 无需保活，后台逻辑均在 Shizuku 运行，与 App 本体分离。
+
 ### 构建
 
 1. 使用 Android Studio 打开项目
