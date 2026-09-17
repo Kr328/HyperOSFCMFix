@@ -1,18 +1,21 @@
 package com.github.kr328.simplefcmfix;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.os.SystemProperties;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
@@ -79,7 +82,10 @@ public final class MainActivity extends Activity {
             implements ShizukuHelper.OnStateChangedListener {
         @Nullable
         private ShizukuHelper shizukuHelper;
+        @Nullable
+        private Boolean lastInBatteryOptimizationAllowlist;
 
+        @SuppressLint("BatteryLife")
         @Override
         public void onCreate(@Nullable final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -122,6 +128,21 @@ public final class MainActivity extends Activity {
                 return false;
             });
 
+            findPreference("self_battery_optimization")
+                    .setOnPreferenceClickListener(preference -> {
+                        final Activity activity = getActivity();
+                        try {
+                            startActivity(new Intent(
+                                    Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+                                    .setData(Uri.fromParts("package", activity.getPackageName(), null)));
+                        } catch (final RuntimeException e) {
+                            Toast.makeText(
+                                    activity, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+
+                        return true;
+                    });
+
             final Preference batteryOptimizationAllowlist =
                     findPreference("battery_optimization_allowlist");
             batteryOptimizationAllowlist.setEnabled(false);
@@ -144,6 +165,8 @@ public final class MainActivity extends Activity {
         @Override
         public void onResume() {
             super.onResume();
+
+            updateSelfBatteryOptimizationPreference();
 
             if (shizukuHelper != null) {
                 shizukuHelper.startUserService();
@@ -207,6 +230,34 @@ public final class MainActivity extends Activity {
             findPreference("history")
                     .setEnabled(state instanceof ShizukuHelper.State.Ready);
             updateServiceEnabledPreference();
+        }
+
+        private void updateSelfBatteryOptimizationPreference() {
+            final Context context = getContext();
+            if (context == null) {
+                return;
+            }
+
+            final boolean inAllowlist = MilletHelper.isMilletNoRestrictApp(
+                    context, context.getPackageName());
+            final int summary = inAllowlist
+                    ? R.string.self_battery_optimization_in_allowlist
+                    : R.string.self_battery_optimization_not_in_allowlist;
+
+            findPreference("self_battery_optimization").setSummary(summary);
+
+            if (!isResumed()) {
+                // Keep the previous state so the change is reported once the fragment resumes,
+                // instead of creating a Toast while the app is in the background.
+                return;
+            }
+
+            if (lastInBatteryOptimizationAllowlist != null
+                    && lastInBatteryOptimizationAllowlist != inAllowlist) {
+                Toast.makeText(context, summary, Toast.LENGTH_SHORT).show();
+            }
+
+            lastInBatteryOptimizationAllowlist = inAllowlist;
         }
 
         private void updateServiceEnabledPreference() {

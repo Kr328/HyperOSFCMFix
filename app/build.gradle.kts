@@ -9,8 +9,8 @@ android {
 
     defaultConfig {
         applicationId = "com.github.kr328.simplefcmfix"
-        versionCode = 10005
-        versionName = "1.5"
+        versionCode = 10006
+        versionName = "1.6"
     }
 
     buildFeatures {
@@ -22,7 +22,7 @@ android {
         debug {
             applicationIdSuffix = ".debug"
         }
-        
+
         release {
             isMinifyEnabled = true
             isShrinkResources = true

@@ -4,6 +4,11 @@
         android:key="shizuku_state"
         android:persistent="false"
         android:title="@string/shizuku_state" />
+    <Preference
+        android:key="self_battery_optimization"
+        android:persistent="false"
+        android:summary="@string/self_battery_optimization_not_in_allowlist"
+        android:title="@string/self_battery_optimization" />
     <SwitchPreference
         android:key="service_enabled"
         android:enabled="false"

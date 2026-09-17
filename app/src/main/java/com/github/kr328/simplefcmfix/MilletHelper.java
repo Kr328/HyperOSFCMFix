@@ -23,6 +23,14 @@ public final class MilletHelper {
         return Arrays.stream(value.split(",")).map(String::trim).collect(Collectors.toList());
     }
 
+    public static boolean isMilletNoRestrictApp(
+            @NonNull final Context context,
+            @NonNull final String packageName
+    ) {
+        final String value = Objects.requireNonNullElse(Settings.System.getString(context.getContentResolver(), MILLET_NO_RESTRICT_APP_KEY), "");
+        return Arrays.stream(value.split(",")).map(String::trim).anyMatch(packageName::equals);
+    }
+
     public static void setMilletNoRestrictApps(
             @NonNull final Context context,
             @NonNull final List<String> apps
