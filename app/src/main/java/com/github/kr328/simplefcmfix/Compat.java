@@ -4,7 +4,10 @@ import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.IActivityManager;
 import android.content.AttributionSource;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.IContentService;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -21,6 +24,41 @@ import java.util.Objects;
 public final class Compat {
     @NonNull
     private static final String TAG = "ContentProviderCompat";
+
+    private static Object createContentServiceDelegate(@NonNull final Context context, @NonNull final IContentService origin) {
+        return Proxy.newProxyInstance(
+                ContentResolver.class.getClassLoader(),
+                new Class[]{IContentService.class},
+                (_proxy, method, args) -> {
+                    try {
+                        return switch (method.getName()) {
+                            case "registerContentObserver", "unregisterContentObserver" -> {
+                                try {
+                                    final Bundle wrapExtra = new Bundle();
+                                    wrapExtra.putBinder("target", origin.asBinder());
+                                    final Bundle reply = context.getContentResolver().call(BuildConfig.APPLICATION_ID + ".proxy", "wrapBinder", null, wrapExtra);
+                                    Objects.requireNonNull(reply, "ProxyProvider.wrapBinder[reply]");
+                                    final IBinder wrapper = reply.getBinder("wrapper");
+
+                                    final IContentService proxy = IContentService.Stub.asInterface(wrapper);
+
+                                    yield method.invoke(proxy, args);
+                                } catch (final Exception e) {
+                                    Log.e(TAG, "registerContentObserver/unregisterContentObserver", e);
+
+                                    yield method.invoke(origin, args);
+                                }
+                            }
+                            default -> method.invoke(origin, args);
+                        };
+                    } catch (final InvocationTargetException e) {
+                        throw e.getTargetException();
+                    } catch (final Exception e) {
+                        return method.invoke(origin, args);
+                    }
+                }
+        );
+    }
 
     @NonNull
     private static Object createActivityServiceDelegate(@NonNull final Object origin)
@@ -71,8 +109,7 @@ public final class Compat {
         );
     }
 
-    public static void applyContentProviderCompatForShizuku() throws ReflectiveOperationException {
-        // apply ActivityManager compat
+    public static void applyActivityManagerCompatForShizuku() throws ReflectiveOperationException {
         final Field activityManagerField = ActivityManager.class.getDeclaredField("IActivityManagerSingleton");
         activityManagerField.setAccessible(true);
 
@@ -90,6 +127,18 @@ public final class Compat {
         instanceField.set(
                 activityManagerSingleton,
                 createActivityServiceDelegate(activityManager)
+        );
+    }
+
+    public static void applyContentServiceCompatForShizuku(@NonNull final Context context) throws ReflectiveOperationException {
+        final Field contentResolverField = ContentResolver.class.getDeclaredField("sContentService");
+        contentResolverField.setAccessible(true);
+
+        final Method getContentServiceMethod = ContentResolver.class.getMethod("getContentService");
+        final IContentService origin = (IContentService) getContentServiceMethod.invoke(null);
+        contentResolverField.set(
+                null,
+                createContentServiceDelegate(context, Objects.requireNonNull(origin, "origin"))
         );
     }
 

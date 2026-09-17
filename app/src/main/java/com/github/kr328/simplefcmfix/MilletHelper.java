@@ -1,6 +1,7 @@
 package com.github.kr328.simplefcmfix;
 
 import android.content.Context;
+import android.database.ContentObserver;
 import android.provider.Settings;
 
 import androidx.annotation.NonNull;
@@ -27,5 +28,16 @@ public final class MilletHelper {
             @NonNull final List<String> apps
     ) {
         Settings.System.putString(context.getContentResolver(), MILLET_NO_RESTRICT_APP_KEY, String.join(", ", apps));
+    }
+
+    public static void observeMilletNoRestrictApps(
+            @NonNull final Context context,
+            @NonNull final ContentObserver observer
+    ) {
+        context.getContentResolver().registerContentObserver(
+                Settings.System.getUriFor(MILLET_NO_RESTRICT_APP_KEY),
+                false,
+                observer
+        );
     }
 }

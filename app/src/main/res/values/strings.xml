@@ -16,7 +16,6 @@
     <string name="history_summary">View recent service actions.</string>
     <string name="history_action_inject">Inject GMS</string>
     <string name="history_action_remove">Remove GMS</string>
-    <string name="history_action_reconnect">Request FCM reconnect</string>
     <string name="history_cause_manual">User Request</string>
     <string name="history_cause_event">Event</string>
     <string name="history_cause_watchdog">Scheduled check</string>

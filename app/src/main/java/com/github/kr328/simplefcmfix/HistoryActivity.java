@@ -5,7 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.text.format.DateUtils;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,8 +18,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -198,21 +201,25 @@ public final class HistoryActivity extends Activity
                     R.string.history_item_title,
                     context.getString(actionTitle(item.action())),
                     context.getString(causeTitle(item.cause()))));
-            holder.subtitle.setText(DateUtils.formatDateTime(
-                    context,
-                    item.timestamp(),
-                    DateUtils.FORMAT_SHOW_DATE
-                            | DateUtils.FORMAT_SHOW_TIME
-                            | DateUtils.FORMAT_SHOW_YEAR));
+            holder.subtitle.setText(formatTimestamp(item.timestamp()));
 
             return view;
+        }
+
+        @NonNull
+        private String formatTimestamp(final long timestamp) {
+            final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+            final String skeleton = DateFormat.is24HourFormat(context)
+                    ? "yMMMdHms"
+                    : "yMMMdhms";
+            final String pattern = DateFormat.getBestDateTimePattern(locale, skeleton);
+            return new SimpleDateFormat(pattern, locale).format(new Date(timestamp));
         }
 
         private int actionTitle(@NonNull final HistoryRecord.Action action) {
             return switch (action) {
                 case INJECT -> R.string.history_action_inject;
                 case REMOVE -> R.string.history_action_remove;
-                case RECONNECT -> R.string.history_action_reconnect;
             };
         }
 

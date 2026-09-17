@@ -37,7 +37,6 @@ public record HistoryRecord(long timestamp, Action action, Cause cause) implemen
     public enum Action {
         INJECT,
         REMOVE,
-        RECONNECT,
     }
 
     public enum Cause {
