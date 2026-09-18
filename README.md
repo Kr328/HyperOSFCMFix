@@ -1,4 +1,4 @@
-# SimpleFCMFix for HyperOS (CN)
+# HyperOSFCMFix
 
 本应用为中国大陆 HyperOS 修复 FCM 意外断开问题。\(需要 [Shizuku](https://github.com/RikkaApps/Shizuku)\)
 
