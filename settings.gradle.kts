@@ -14,7 +14,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "simple-fcm-fix"
+rootProject.name = "HyperOSFCMFix"
 
 include(":app")
 include(":hideapi")
