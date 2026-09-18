@@ -11,9 +11,9 @@
     <string name="service_enabled_summary">自动将 GMS 加入电池优化白名单。</string>
     <string name="battery_optimization_allowlist">电池优化白名单</string>
     <string name="battery_optimization_allowlist_summary">查看电池优化白名单中的应用。</string>
-    <string name="self_battery_optimization">电池优化白名单</string>
-    <string name="self_battery_optimization_in_allowlist">当前应用已在电池优化白名单</string>
-    <string name="self_battery_optimization_not_in_allowlist">当前应用需要配置电池优化白名单</string>
+    <string name="self_battery_optimization">禁用电池优化</string>
+    <string name="self_battery_optimization_in_allowlist">当前应用已在电池优化白名单中。</string>
+    <string name="self_battery_optimization_not_in_allowlist">当前应用需要加入电池优化白名单。</string>
     <string name="unknown_app">未知应用</string>
     <string name="history">历史记录</string>
     <string name="history_summary">查看最近的服务操作。</string>

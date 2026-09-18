@@ -11,7 +11,7 @@
     <string name="service_enabled_summary">Automatically add GMS to the battery optimization allowlist.</string>
     <string name="battery_optimization_allowlist">Battery optimization allowlist</string>
     <string name="battery_optimization_allowlist_summary">View apps in the battery optimization allowlist.</string>
-    <string name="self_battery_optimization">Battery optimization allowlist</string>
+    <string name="self_battery_optimization">Disable battery optimization</string>
     <string name="self_battery_optimization_in_allowlist">This app is already in the battery optimization allowlist.</string>
     <string name="self_battery_optimization_not_in_allowlist">This app needs to be added to the battery optimization allowlist.</string>
     <string name="unknown_app">Unknown app</string>
