@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Simple FCM Fix</string>
+    <string name="app_name">FCM Fix</string>
     <string name="shizuku_state">Shizuku Status</string>
     <string name="shizuku_state_unavailable">Shizuku unavailable.</string>
     <string name="shizuku_state_no_permission">Shizuku permission not granted.</string>
