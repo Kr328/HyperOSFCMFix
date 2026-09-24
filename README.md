@@ -1,6 +1,6 @@
 # HyperOSFCMFix
 
-本应用为中国大陆 HyperOS 修复 FCM 意外断开问题。\(需要 [Shizuku](https://github.com/RikkaApps/Shizuku)\)
+本应用为中国大陆 HyperOS 修复 FCM 推送和唤醒问题。\(需要 [Shizuku](https://github.com/RikkaApps/Shizuku)\)
 
 参考 [dingwen07/hyperos-fcm-fix](https://github.com/dingwen07/hyperos-fcm-fix)
 
