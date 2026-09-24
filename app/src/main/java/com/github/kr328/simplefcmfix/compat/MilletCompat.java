@@ -1,4 +1,4 @@
-package com.github.kr328.simplefcmfix;
+package com.github.kr328.simplefcmfix.compat;
 
 import android.content.Context;
 import android.database.ContentObserver;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public final class MilletHelper {
+public final class MilletCompat {
     @NonNull
     private static final String MILLET_NO_RESTRICT_APP_KEY = "MILLET_NO_RESTRICT_APP";
 

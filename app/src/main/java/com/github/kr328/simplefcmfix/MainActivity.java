@@ -26,6 +26,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.github.kr328.simplefcmfix.compat.MilletCompat;
+
 import java.util.Objects;
 
 /**
@@ -128,6 +130,21 @@ public final class MainActivity extends Activity {
                 return false;
             });
 
+            final SwitchPreference autoAllowFCMWakeForPlayStoreApps =
+                    (SwitchPreference) findPreference("auto_allow_fcm_wake_for_play_store_apps");
+            autoAllowFCMWakeForPlayStoreApps.setOnPreferenceChangeListener((preference, newValue) -> {
+                try {
+                    final ApplierConfig config = ConfigProvider.getApplierConfig(getActivity());
+                    config.autoAllowFCMWakeForPlayStoreApps = (boolean) newValue;
+                    ConfigProvider.setApplierConfig(getActivity(), config);
+                    autoAllowFCMWakeForPlayStoreApps.setChecked((boolean) newValue);
+                } catch (final RuntimeException e) {
+                    Toast.makeText(getActivity(), R.string.applier_config_save_failed, Toast.LENGTH_SHORT).show();
+                }
+
+                return false;
+            });
+
             findPreference("self_battery_optimization")
                     .setOnPreferenceClickListener(preference -> {
                         final Activity activity = getActivity();
@@ -167,6 +184,7 @@ public final class MainActivity extends Activity {
             super.onResume();
 
             updateSelfBatteryOptimizationPreference();
+            updateAutoAllowFCMWakeForPlayStoreAppsPreference();
 
             if (shizukuHelper != null) {
                 shizukuHelper.startUserService();
@@ -238,7 +256,7 @@ public final class MainActivity extends Activity {
                 return;
             }
 
-            final boolean inAllowlist = MilletHelper.isMilletNoRestrictApp(
+            final boolean inAllowlist = MilletCompat.isMilletNoRestrictApp(
                     context, context.getPackageName());
             final int summary = inAllowlist
                     ? R.string.self_battery_optimization_in_allowlist
@@ -258,6 +276,19 @@ public final class MainActivity extends Activity {
             }
 
             lastInBatteryOptimizationAllowlist = inAllowlist;
+        }
+
+        private void updateAutoAllowFCMWakeForPlayStoreAppsPreference() {
+            final SwitchPreference preference = (SwitchPreference)
+                    findPreference("auto_allow_fcm_wake_for_play_store_apps");
+            try {
+                final ApplierConfig config = ConfigProvider.getApplierConfig(getActivity());
+                preference.setChecked(config.autoAllowFCMWakeForPlayStoreApps);
+                preference.setEnabled(true);
+            } catch (final RuntimeException e) {
+                preference.setEnabled(false);
+                Toast.makeText(getActivity(), R.string.applier_config_load_failed, Toast.LENGTH_SHORT).show();
+            }
         }
 
         private void updateServiceEnabledPreference() {

@@ -1,6 +1,6 @@
 [versions]
 agp = "9.4.1"
-androidx-annotation = "1.10.0"
+androidx-annotation = "1.11.0"
 shizuku = "13.1.5"
 
 [libraries]

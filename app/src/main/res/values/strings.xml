@@ -9,6 +9,10 @@
     <string name="shizuku_state_ready">Shizuku UserService is ready.</string>
     <string name="service_enabled">Enable service</string>
     <string name="service_enabled_summary">Automatically add GMS to the battery optimization allowlist.</string>
+    <string name="auto_allow_fcm_wake_for_play_store_apps">Automatically allow autostart</string>
+    <string name="auto_allow_fcm_wake_for_play_store_apps_summary">Automatically allow autostart for apps installed from Google Play. Apps from other sources still need to be configured manually.</string>
+    <string name="applier_config_load_failed">Failed to load the autostart setting.</string>
+    <string name="applier_config_save_failed">Failed to save the autostart setting.</string>
     <string name="battery_optimization_allowlist">Battery optimization allowlist</string>
     <string name="battery_optimization_allowlist_summary">View apps in the battery optimization allowlist.</string>
     <string name="self_battery_optimization">Disable battery optimization</string>

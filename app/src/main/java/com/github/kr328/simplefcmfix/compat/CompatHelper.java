@@ -1,7 +1,9 @@
-package com.github.kr328.simplefcmfix;
+package com.github.kr328.simplefcmfix.compat;
 
+import android.annotation.SuppressLint;
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Binder;
@@ -14,25 +16,42 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-/**
- * Hosts forwarding binders for processes without a AMS process record (e.g. Shizuku user services).
- * <p>
- * Transactions sent to the returned binder are re-issued from this process, so services checking
- * the calling pid against AMS (e.g. HyperOS ContentService.registerContentObserver) accept them.
- */
-public final class ProxyProvider extends ContentProvider {
-    private static final String TAG = "ProxyProvider";
+import com.github.kr328.simplefcmfix.BuildConfig;
+
+import java.util.Objects;
+
+public final class CompatHelper extends ContentProvider {
+    private static final String TAG = "CompatHelper";
 
     private static final String METHOD_WRAP_BINDER = "wrapBinder";
     private static final String KEY_TARGET = "target";
     private static final String KEY_WRAPPER = "wrapper";
+    @SuppressLint("StaticFieldLeak")
+    @Nullable
+    private static Context context = null;
+
+    public static void attachContext(@NonNull final Context context) {
+        CompatHelper.context = context;
+    }
+
+    public static IBinder wrapBinder(@NonNull final IBinder origin) {
+        final Context context = CompatHelper.context;
+        if (context == null) {
+            return origin;
+        }
+
+        final Bundle wrapExtra = new Bundle();
+        wrapExtra.putBinder(KEY_TARGET, origin);
+        final Bundle reply = context.getContentResolver().call(BuildConfig.APPLICATION_ID + ".helper", METHOD_WRAP_BINDER, null, wrapExtra);
+        Objects.requireNonNull(reply, "CompatHelper.wrapBinder[reply]");
+        return reply.getBinder(KEY_WRAPPER);
+    }
 
     @Override
     public boolean onCreate() {
         return true;
     }
 
-    @Nullable
     @Override
     public Bundle call(@NonNull final String method, @Nullable final String arg, @Nullable final Bundle extras) {
         if (!METHOD_WRAP_BINDER.equals(method)) {

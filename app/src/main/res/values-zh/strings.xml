@@ -9,6 +9,10 @@
     <string name="shizuku_state_ready">Shizuku UserService 已就绪。</string>
     <string name="service_enabled">启用服务</string>
     <string name="service_enabled_summary">自动将 GMS 加入电池优化白名单。</string>
+    <string name="auto_allow_fcm_wake_for_play_store_apps">自动配置允许自启动</string>
+    <string name="auto_allow_fcm_wake_for_play_store_apps_summary">自动为来自 Google Play 的应用配置允许自启动。注意：其他来源的应用仍需要您手动配置允许自启动。</string>
+    <string name="applier_config_load_failed">加载自启动设置失败。</string>
+    <string name="applier_config_save_failed">保存自启动设置失败。</string>
     <string name="battery_optimization_allowlist">电池优化白名单</string>
     <string name="battery_optimization_allowlist_summary">查看电池优化白名单中的应用。</string>
     <string name="self_battery_optimization">禁用电池优化</string>

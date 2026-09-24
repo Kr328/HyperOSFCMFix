@@ -8,6 +8,8 @@ import android.content.pm.PackageManager;
 
 import androidx.annotation.NonNull;
 
+import com.github.kr328.simplefcmfix.compat.ContextCompat;
+
 public class ShizukuContext extends ContextWrapper {
     private final Context effectiveContext;
 
@@ -23,7 +25,7 @@ public class ShizukuContext extends ContextWrapper {
 
         this.effectiveContext = ((Context) ActivityThread.currentActivityThread().getSystemContext()).createPackageContext(packageName, 0);
 
-        Compat.fixContextImplOpPackage(effectiveContext);
+        ContextCompat.fixContextImplOpPackage(effectiveContext);
     }
 
     public Context getEffectiveContext() {

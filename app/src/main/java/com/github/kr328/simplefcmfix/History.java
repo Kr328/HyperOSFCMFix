@@ -19,5 +19,4 @@ public class History {
     public List<HistoryRecord> getRecords() {
         return Collections.unmodifiableList(records);
     }
-
 }

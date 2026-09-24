@@ -15,6 +15,11 @@
         android:persistent="false"
         android:summary="@string/service_enabled_summary"
         android:title="@string/service_enabled" />
+    <SwitchPreference
+        android:key="auto_allow_fcm_wake_for_play_store_apps"
+        android:persistent="false"
+        android:summary="@string/auto_allow_fcm_wake_for_play_store_apps_summary"
+        android:title="@string/auto_allow_fcm_wake_for_play_store_apps" />
     <Preference
         android:key="battery_optimization_allowlist"
         android:enabled="false"
