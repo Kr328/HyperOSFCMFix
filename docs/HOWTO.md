@@ -14,17 +14,17 @@ Google 服务器 ── MCS 长连接/心跳 ──▶ GMS ── c2dm 广播等
 - **上游：GMS 被冻结。** 国行 HyperOS 的 Greezer 可以冻结 `com.google.android.gms` 所在 uid；冻结后进程不能处理 socket 或心跳。TCP 显示 `ESTABLISHED` 只说明内核还保留连接，不能证明 GMS 正在收消息。AOSP 的 Doze 电池优化白名单也不能阻止这层冻结。【源码、真机】
 - **下游：目标 App 被冻结或不能自启动。** GMS 收到消息后，常用 `com.google.android.c2dm.intent.RECEIVE` 广播交给目标 App。国行策略不会默认放行已冻结 App 的这个广播；冷进程还可能被 MIUI 的自启动检查拒绝。被 `force-stop` 后处于 `stopped=true` 的包也不能靠广播重新启动。【源码、真机】
 
-因此只让 GMS 保持运行，不能保证所有目标 App 都收到通知。当前 App 分别处理 GMS 冻结、目标 App 的 c2dm 广播门，以及部分应用的自启动门。
+因此只让 GMS 保持运行，不能保证所有目标 App 都收到通知。当前 App 分别处理 GMS 冻结、目标 App 的 c2dm 广播门，以及部分应用的自启动与既有 `stopped` 状态。
 
 ## 2. 当前 App 的修复链路
 
-用户在界面授权 Shizuku 并开启服务后，`ShizukuHelper` 绑定 daemon UserService。运行在 Shizuku 用户服务进程中的 [`ShizukuRemote.start()`](../app/src/main/java/com/github/kr328/simplefcmfix/ShizukuRemote.java) 先扫描 FCM 接收应用并调用 [`Applier.apply()`](../app/src/main/java/com/github/kr328/simplefcmfix/Applier.java)，成功后启动 [`Monitor`](../app/src/main/java/com/github/kr328/simplefcmfix/Monitor.java)。Shizuku 提供执行 Settings.Global 写入和 app-op 修改所需的 shell/root 身份。
+用户在界面授权 Shizuku 并开启服务后，`ShizukuHelper` 绑定 daemon UserService。运行在 Shizuku 用户服务进程中的 [`ShizukuRemote.start()`](../app/src/main/java/com/github/kr328/simplefcmfix/ShizukuRemote.java) 先扫描 FCM 接收应用并调用 [`Applier.apply()`](../app/src/main/java/com/github/kr328/simplefcmfix/Applier.java)，成功后启动 [`Monitor`](../app/src/main/java/com/github/kr328/simplefcmfix/Monitor.java)。Shizuku 提供执行 Settings.Global 写入、app-op 修改及清除包 `stopped` 状态所需的 shell/root 身份。
 
 | 动作 | 当前实现 | 解决的问题与边界 |
 | --- | --- | --- |
 | 保护 GMS | `FCMCompat.replaceGMSInMilletList()` 确保 `com.google.android.gms` 在 `Settings.System.MILLET_NO_RESTRICT_APP` 中；`Applier` 只在列表有变化时通过 `MilletCompat` 写回。 | Greezer/Aurogon 读取此列表并在后续冻结决策中排除 GMS；写入本身不会主动解冻已冻结进程。【源码、真机】 |
 | 放行目标广播 | `FCMCompat.findAllFCMPackages()` 查询当前可解析的 c2dm receiver，排除 `android`；`Applier` 在 `Settings.Global.aurogon_enable` 的 `broadcastctrl:true` 段为这些包配置 `包名/com.google.android.c2dm.intent.RECEIVE`。 | 命中规则时，Greezer 可为该广播解冻目标 uid 并放行接收者。【源码、真机】这只覆盖 c2dm 广播路径。 |
-| 可选自启动 | 设置项 `autoAllowFCMWakeForPlayStoreApps` 默认开启。开启时，`Applier` 仅对扫描结果中安装来源为 `com.android.vending` 的包，将 MIUI app-op 10008 设为 `MODE_ALLOWED`；单包失败会记录日志并继续。 | app-op 10008 参与后台唤醒及 MIUI 清理器的 force-stop 决策。【源码、真机】不覆盖其他安装来源，也不清除既有 `stopped` 状态。 |
+| 可选自启动 | 设置项 `autoAllowFCMWakeForPlayStoreApps` 默认开启。开启时，`Applier` 仅对扫描结果中安装来源为 `com.android.vending` 的包，先将 MIUI app-op 10008 设为 `MODE_ALLOWED`，再调用 `IPackageManager.setPackageStoppedState(packageName, false, userId)` 清除当前用户下该包既有的 `stopped` 状态；单包失败会记录日志并继续。 | 在所调查 ROM 上，MIUI 清理器可能通过 force-stop 将包置为 `stopped=true`，使后台广播无法拉起它。app-op 10008 可避免常规清理再次这样做，清除既有状态则使包重新具备接收广播的条件。【源码、真机】其他 force-stop 路径仍可能再次置位。 |
 | 请求恢复 GMS | 每次 `Applier.apply()` 最后都发送定向 `GCM_RECONNECT` 广播，并查询 `content://com.google.android.gms.chimera`。 | 真机实验中，广播不能及时解冻已冻结的 GMS；到达 GMS 进程的 provider 查询可以触发解冻。查询异常只记日志。【真机】 |
 
 `Applier.apply()` 返回值仅表示 MILLET 或 Aurogon 设置是否被改写；**即使两个设置都无须改写**，它仍会执行可选自启动设置、重连广播和 provider 查询。历史记录只在相应调用路径按返回值或操作类型写入，不能当作每一次唤醒尝试的完整日志。
@@ -32,9 +32,9 @@ Google 服务器 ── MCS 长连接/心跳 ──▶ GMS ── c2dm 广播等
 ### 监听、重试与停止
 
 - `Monitor` 为 MILLET 和 `aurogon_enable` 的精确 URI 注册 `ContentObserver`；收到变化后，`ShizukuRemote` 延迟 1 秒再执行 `Applier.apply()`。PowerKeeper 可以根据自己的 `userTable` 将 MILLET 整体覆写，所以需要持续对账。【源码】
-- `Monitor` 监听 uid 的 active/gone 事件；`ShizukuRemote` 延迟 5 秒重新扫描 c2dm receiver。只有扫描结果集合变化时才再次 `apply()`。它还监听 app-op 10008 的变化，仅对当前关注的 FCM 包延迟 1 秒重设可选自启动策略。
+- `Monitor` 监听 uid 的 active/gone 事件；`ShizukuRemote` 延迟 5 秒重新扫描 c2dm receiver。只有扫描结果集合变化时才再次 `apply()`。它还监听 app-op 10008 的变化，延迟 1 秒对当前关注的 FCM 包重设可选自启动策略；该路径也会对符合条件的 Play 商店来源应用再次清除 `stopped` 状态。
 - `Monitor` 每 10 分钟安排一次 `AlarmManager` watchdog；触发后延迟 1 秒，重新扫描应用并执行 `apply()`。这既补漏也再次尝试唤醒 GMS。配置项变化时，服务更新 `Applier` 配置；服务已启动则立即 `apply()`。
-- `stop()` 先停止上述监听和 watchdog，再调用 `Applier.restore()`：从 MILLET 移除 GMS，删除设置值里 action 为 c2dm 的广播例外；如果剩下的是空的已启用 `broadcastctrl` 段，则移除该段。**它不会撤销已设置的 app-op 10008，也不会保证 Aurogon 的运行时映射立即清空。** `destroy()` 也会调用 `restore()`。当前实现并未记录原值，因此恢复时也会移除服务启动前已存在的 GMS 和 c2dm 条目。
+- `stop()` 先停止上述监听和 watchdog，再调用 `Applier.restore()`：从 MILLET 移除 GMS，删除设置值里 action 为 c2dm 的广播例外；如果剩下的是空的已启用 `broadcastctrl` 段，则移除该段。**它不会撤销已设置的 app-op 10008 或恢复此前的 `stopped` 状态，也不会保证 Aurogon 的运行时映射立即清空。** `destroy()` 也会调用 `restore()`。当前实现并未记录原值，因此恢复时也会移除服务启动前已存在的 GMS 和 c2dm 条目。
 
 ## 3. 为什么 ContentObserver 要经过 App 进程
 
@@ -49,7 +49,7 @@ Shizuku 的用户服务以 shell/root 身份运行，但这类 `app_process` 没
 | 现象 | 核查点 |
 | --- | --- |
 | GMS 又被冻 | 检查 MILLET 是否仍含 GMS，以及 `dumpsys greezer`。PowerKeeper 的 `userTable` 变更可能覆写 MILLET；设置变化触发的观察回调也可能延迟或截流。 |
-| 目标 App 仍收不到消息 | 检查它是否有当前可解析的 c2dm receiver、是否在 `aurogon_enable` 的规则中、app-op 10008 和 `stopped` 状态。当前扫描基于 `queryBroadcastReceivers`，可能漏掉已禁用的入口；`broadcastctrl` 不覆盖 `startService`、`bindService` 或 Job 路径。 |
+| 目标 App 仍收不到消息 | 检查它是否有当前可解析的 c2dm receiver、是否在 `aurogon_enable` 的规则中、app-op 10008 和 `stopped` 状态。可选自启动只处理扫描到的 Play 商店来源应用；若仍为 `stopped=true`，还需检查单包操作是否失败或之后是否再次被 force-stop。当前扫描基于 `queryBroadcastReceivers`，可能漏掉已禁用的入口；`broadcastctrl` 不覆盖 `startService`、`bindService` 或 Job 路径。 |
 | 界面显示自启动关闭 | 当前代码只写执法用的 app-op 10008；MIUI 界面另读 10053/LBE 状态，系统同步也可能覆盖 10008。【源码、真机】 |
 | 关闭服务后仍有广播放行迹象 | 所调查 ROM 的 Aurogon 广播映射更新时不会清除旧包条目。当前 `restore()` 修改持久化设置值，但没有为旧条目写惰性规则；运行时例外可能留到重启。【源码、真机】 |
 

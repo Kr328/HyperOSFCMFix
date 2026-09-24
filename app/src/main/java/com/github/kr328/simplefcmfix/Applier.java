@@ -2,6 +2,8 @@ package com.github.kr328.simplefcmfix;
 
 import android.app.AppOpsManager;
 import android.content.Context;
+import android.content.pm.IPackageManager;
+import android.os.ServiceManager;
 import android.util.Log;
 import android.util.Pair;
 
@@ -35,6 +37,8 @@ public final class Applier {
     }
 
     private void setAllowAutoStartForPackagesFromPlayStore(final Iterable<String> apps) {
+        final int userId = context.getApplicationInfo().uid / 100000 /* UserHandle.PER_USER_RANGE */;
+
         for (final String packageName : apps) {
             if (!FCMCompat.checkInstallFromGooglePlayStore(context, packageName)) {
                 continue;
@@ -42,6 +46,9 @@ public final class Applier {
 
             try {
                 AppOpsCompat.setAutoStartMode(context, packageName, AppOpsManager.MODE_ALLOWED);
+
+                IPackageManager.Stub.asInterface(ServiceManager.getService("package"))
+                        .setPackageStoppedState(packageName, false, userId);
 
                 Log.d(TAG, "setAutoStartMode* allowed: " + packageName);
             } catch (final Throwable e) {
