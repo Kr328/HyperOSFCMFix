@@ -8,13 +8,14 @@
 
 向 Settings.System."MILLET_NO_RESTRICT_APP" 中注入 "com.google.android.gms"。
 
-参见 [HYPEROS_INVESTIGATION.md](docs/HYPEROS_INVESTIGATION.md)
+参见 [HOWTO.md](docs/HOWTO.md)
 
 ### 特性
 
 1. 小，大约 100 KiB。
 2. 无需短轮询，基于 ContentObserver 获取事件注入 GMS，同时保留 10min 一次的兜底检测/唤醒。
 3. 无需保活，后台逻辑均在 Shizuku 运行，与 App 本体分离。
+4. 提供全链路唤醒保护。
 
 ### 构建
 
