@@ -76,7 +76,7 @@ public class Monitor {
                 .set(
                         AlarmManager.ELAPSED_REALTIME,
                         SystemClock.elapsedRealtime() + WATCHDOG_PERIOD,
-                        "SimpleFCMFix:watchdog",
+                        "HyperOSFCMFix:watchdog",
                         watchdog,
                         handler
                 );

@@ -187,6 +187,11 @@ public final class ShizukuRemote extends IShizukuRemote.Stub implements Monitor.
         try {
             monitor.stop();
 
+            handler.removeMessages(HANDLE_MILLET_OR_AUROGON_CHANGED);
+            handler.removeMessages(HANDLE_PROCESS_CHANGED);
+            handler.removeMessages(HANDLE_WATCHDOG);
+            handler.removeMessages(HANDLE_AUTO_START_MODE_CHANGED);
+
             applier.restore();
 
             started = false;
