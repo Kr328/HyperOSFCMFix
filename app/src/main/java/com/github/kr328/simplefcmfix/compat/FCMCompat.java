@@ -40,7 +40,7 @@ public class FCMCompat {
     }
 
     @SuppressWarnings("deprecation")
-    public static boolean checkInstallFromGooglePlayStore(final Context context, final String packageName) {
+    public static boolean checkInstallFromPlayStore(final Context context, final String packageName) {
         return PLAY_STORE_PACKAGE.equals(context.getPackageManager().getInstallerPackageName(packageName));
     }
 

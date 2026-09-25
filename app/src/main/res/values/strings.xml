@@ -10,7 +10,7 @@
     <string name="service_enabled">Enable service</string>
     <string name="service_enabled_summary">Automatically add GMS to the battery optimization allowlist.</string>
     <string name="auto_allow_fcm_wake_for_play_store_apps">Automatically allow autostart</string>
-    <string name="auto_allow_fcm_wake_for_play_store_apps_summary">Automatically allow autostart for apps installed from Google Play.\nApps from other sources still need to be configured manually.</string>
+    <string name="auto_allow_fcm_wake_for_play_store_apps_summary">Automatically allow autostart for apps installed from Play Store.\nApps from other sources still need to be configured manually.</string>
     <string name="applier_config_load_failed">Failed to load the autostart setting.</string>
     <string name="applier_config_save_failed">Failed to save the autostart setting.</string>
     <string name="app_list">All apps</string>

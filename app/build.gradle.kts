@@ -9,8 +9,8 @@ android {
 
     defaultConfig {
         applicationId = "com.github.kr328.simplefcmfix"
-        versionCode = 10012
-        versionName = "1.12"
+        versionCode = 10013
+        versionName = "1.13"
     }
 
     buildFeatures {

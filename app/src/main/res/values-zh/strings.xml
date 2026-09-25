@@ -10,7 +10,7 @@
     <string name="service_enabled">启用服务</string>
     <string name="service_enabled_summary">自动将 GMS 加入电池优化白名单。</string>
     <string name="auto_allow_fcm_wake_for_play_store_apps">自动配置允许自启动</string>
-    <string name="auto_allow_fcm_wake_for_play_store_apps_summary">自动为来自 Google Play 的应用配置允许自启动。\n注意：其他来源的应用仍需要您手动配置允许自启动。</string>
+    <string name="auto_allow_fcm_wake_for_play_store_apps_summary">自动为来自 Play 商店的应用配置允许自启动。\n注意：其他来源的应用仍需要您手动配置允许自启动。</string>
     <string name="applier_config_load_failed">加载自启动设置失败。</string>
     <string name="applier_config_save_failed">保存自启动设置失败。</string>
     <string name="app_list">全部应用</string>
@@ -19,13 +19,13 @@
     <string name="app_list_filter">筛选应用</string>
     <string name="app_list_filter_show_system">显示系统应用</string>
     <string name="app_list_filter_only_fcm">仅显示 FCM 应用</string>
-    <string name="app_list_filter_only_play_store">仅显示 Play Store 应用</string>
+    <string name="app_list_filter_only_play_store">仅显示 Play 商店应用</string>
     <string name="app_list_filter_only_no_restriction">仅显示无限制应用</string>
     <string name="app_list_filter_only_autostart">仅显示自启动应用</string>
     <string name="app_list_no_matches">没有符合条件的应用</string>
     <string name="system_app_suffix">&#160;(系统应用)</string>
     <string name="app_status_fcm">FCM</string>
-    <string name="app_status_play_store">Play Store</string>
+    <string name="app_status_play_store">Play 商店</string>
     <string name="app_status_no_restriction">无限制</string>
     <string name="app_status_autostart">自启动</string>
     <string name="self_battery_optimization">禁用电池优化</string>

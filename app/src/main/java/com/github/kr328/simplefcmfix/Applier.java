@@ -40,7 +40,7 @@ public final class Applier {
         final int userId = context.getApplicationInfo().uid / 100000 /* UserHandle.PER_USER_RANGE */;
 
         for (final String packageName : apps) {
-            if (!FCMCompat.checkInstallFromGooglePlayStore(context, packageName)) {
+            if (!FCMCompat.checkInstallFromPlayStore(context, packageName)) {
                 continue;
             }
 

@@ -242,7 +242,7 @@ public final class ShizukuRemote extends IShizukuRemote.Stub implements Monitor.
                             pkg.packageName,
                             (pkg.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0,
                             fcmApps.contains(pkg.packageName),
-                            FCMCompat.checkInstallFromGooglePlayStore(context, pkg.packageName),
+                            FCMCompat.checkInstallFromPlayStore(context, pkg.packageName),
                             noRestrictApps.contains(pkg.packageName),
                             isAllowAutoStart
                     );
