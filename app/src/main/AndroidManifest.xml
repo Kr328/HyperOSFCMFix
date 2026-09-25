@@ -26,10 +26,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AllowlistActivity"
+            android:name=".AppListActivity"
             android:exported="false"
-            android:label="@string/battery_optimization_allowlist"
-            android:parentActivityName=".MainActivity" />
+            android:label="@string/app_list"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppListTheme" />
         <activity
             android:name=".HistoryActivity"
             android:exported="false"

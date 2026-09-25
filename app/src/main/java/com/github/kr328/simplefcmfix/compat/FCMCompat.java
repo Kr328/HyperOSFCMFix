@@ -36,7 +36,7 @@ public class FCMCompat {
                 .stream()
                 .map(resolveInfo -> resolveInfo.activityInfo.packageName)
                 .filter(pkg -> !"android".equals(pkg))
-                .collect(Collectors.toUnmodifiableSet());
+                .collect(Collectors.toSet());
     }
 
     @SuppressWarnings("deprecation")

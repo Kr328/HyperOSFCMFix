@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/filter_menu"
+        android:icon="@drawable/ic_filter"
+        android:showAsAction="always"
+        android:title="@string/app_list_filter">
+        <menu>
+            <item
+                android:id="@+id/filter_show_system"
+                android:checkable="true"
+                android:title="@string/app_list_filter_show_system" />
+            <item
+                android:id="@+id/filter_only_fcm"
+                android:checkable="true"
+                android:title="@string/app_list_filter_only_fcm" />
+            <item
+                android:id="@+id/filter_only_play_store"
+                android:checkable="true"
+                android:title="@string/app_list_filter_only_play_store" />
+            <item
+                android:id="@+id/filter_only_no_restriction"
+                android:checkable="true"
+                android:title="@string/app_list_filter_only_no_restriction" />
+            <item
+                android:id="@+id/filter_only_autostart"
+                android:checkable="true"
+                android:title="@string/app_list_filter_only_autostart" />
+        </menu>
+    </item>
+</menu>

@@ -1,7 +1,7 @@
 package com.github.kr328.simplefcmfix;
 
 import com.github.kr328.simplefcmfix.HistoryRecord;
-import com.github.kr328.simplefcmfix.ApplierConfig;
+import com.github.kr328.simplefcmfix.AppStatus;
 
 interface IShizukuRemote {
     void destroy() = 16777114;
@@ -11,4 +11,5 @@ interface IShizukuRemote {
     void stop() = 3;
     String[] getNoRestrictApps() = 4;
     HistoryRecord[] getHistory() = 5;
+    AppStatus[] listApps() = 6;
 }

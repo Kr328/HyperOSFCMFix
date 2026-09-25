@@ -134,9 +134,7 @@ public final class MainActivity extends Activity {
                     (SwitchPreference) findPreference("auto_allow_fcm_wake_for_play_store_apps");
             autoAllowFCMWakeForPlayStoreApps.setOnPreferenceChangeListener((preference, newValue) -> {
                 try {
-                    final ApplierConfig config = ConfigProvider.getApplierConfig(getActivity());
-                    config.autoAllowFCMWakeForPlayStoreApps = (boolean) newValue;
-                    ConfigProvider.setApplierConfig(getActivity(), config);
+                    ConfigProvider.setApplierConfig(getActivity(), new ApplierConfig((boolean) newValue));
                     autoAllowFCMWakeForPlayStoreApps.setChecked((boolean) newValue);
                 } catch (final RuntimeException e) {
                     Toast.makeText(getActivity(), R.string.applier_config_save_failed, Toast.LENGTH_SHORT).show();
@@ -160,12 +158,11 @@ public final class MainActivity extends Activity {
                         return true;
                     });
 
-            final Preference batteryOptimizationAllowlist =
-                    findPreference("battery_optimization_allowlist");
-            batteryOptimizationAllowlist.setEnabled(false);
-            batteryOptimizationAllowlist.setOnPreferenceClickListener(preference -> {
+            final Preference appList = findPreference("app_list");
+            appList.setEnabled(false);
+            appList.setOnPreferenceClickListener(preference -> {
                 startActivity(new Intent(getActivity(),
-                        AllowlistActivity.class));
+                        AppListActivity.class));
 
                 return true;
             });
@@ -243,7 +240,7 @@ public final class MainActivity extends Activity {
                 preference.setSummary(R.string.shizuku_state_ready);
             }
 
-            findPreference("battery_optimization_allowlist")
+            findPreference("app_list")
                     .setEnabled(state instanceof ShizukuHelper.State.Ready);
             findPreference("history")
                     .setEnabled(state instanceof ShizukuHelper.State.Ready);
@@ -283,7 +280,7 @@ public final class MainActivity extends Activity {
                     findPreference("auto_allow_fcm_wake_for_play_store_apps");
             try {
                 final ApplierConfig config = ConfigProvider.getApplierConfig(getActivity());
-                preference.setChecked(config.autoAllowFCMWakeForPlayStoreApps);
+                preference.setChecked(config.autoAllowFCMWakeForPlayStoreApps());
                 preference.setEnabled(true);
             } catch (final RuntimeException e) {
                 preference.setEnabled(false);

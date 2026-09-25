@@ -21,11 +21,11 @@
         android:summary="@string/auto_allow_fcm_wake_for_play_store_apps_summary"
         android:title="@string/auto_allow_fcm_wake_for_play_store_apps" />
     <Preference
-        android:key="battery_optimization_allowlist"
+        android:key="app_list"
         android:enabled="false"
         android:persistent="false"
-        android:summary="@string/battery_optimization_allowlist_summary"
-        android:title="@string/battery_optimization_allowlist" />
+        android:summary="@string/app_list_summary"
+        android:title="@string/app_list" />
     <Preference
         android:key="history"
         android:enabled="false"

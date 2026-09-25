@@ -1,6 +1,8 @@
 package com.github.kr328.simplefcmfix;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.database.ContentObserver;
 import android.os.Handler;
 import android.os.Looper;
@@ -10,12 +12,14 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.github.kr328.simplefcmfix.compat.ActivityCompat;
+import com.github.kr328.simplefcmfix.compat.AppOpsCompat;
 import com.github.kr328.simplefcmfix.compat.CompatHelper;
 import com.github.kr328.simplefcmfix.compat.ContentCompat;
 import com.github.kr328.simplefcmfix.compat.FCMCompat;
 import com.github.kr328.simplefcmfix.compat.MilletCompat;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public final class ShizukuRemote extends IShizukuRemote.Stub implements Monitor.Callback {
@@ -58,7 +62,7 @@ public final class ShizukuRemote extends IShizukuRemote.Stub implements Monitor.
 
                     if (applier.apply()) {
                         synchronized (history) {
-                            history.addRecord(new HistoryRecord(System.currentTimeMillis(), HistoryRecord.Action.INJECT, HistoryRecord.Cause.EVENT));
+                            history.addRecord(new HistoryRecord(System.currentTimeMillis(), HistoryRecord.Action.APPLY, HistoryRecord.Cause.EVENT));
                         }
                     }
                 }
@@ -72,7 +76,7 @@ public final class ShizukuRemote extends IShizukuRemote.Stub implements Monitor.
                         interestApps = newInterestApps;
                         if (applier.apply()) {
                             synchronized (history) {
-                                history.addRecord(new HistoryRecord(System.currentTimeMillis(), HistoryRecord.Action.INJECT, HistoryRecord.Cause.EVENT));
+                                history.addRecord(new HistoryRecord(System.currentTimeMillis(), HistoryRecord.Action.APPLY, HistoryRecord.Cause.EVENT));
                             }
                         }
                     }
@@ -84,7 +88,7 @@ public final class ShizukuRemote extends IShizukuRemote.Stub implements Monitor.
 
                     if (applier.apply()) {
                         synchronized (history) {
-                            history.addRecord(new HistoryRecord(System.currentTimeMillis(), HistoryRecord.Action.INJECT, HistoryRecord.Cause.WATCHDOG));
+                            history.addRecord(new HistoryRecord(System.currentTimeMillis(), HistoryRecord.Action.APPLY, HistoryRecord.Cause.WATCHDOG));
                         }
                     }
                 }
@@ -94,7 +98,7 @@ public final class ShizukuRemote extends IShizukuRemote.Stub implements Monitor.
                     applier.applyAppOps();
 
                     synchronized (history) {
-                        history.addRecord(new HistoryRecord(System.currentTimeMillis(), HistoryRecord.Action.INJECT, HistoryRecord.Cause.EVENT));
+                        history.addRecord(new HistoryRecord(System.currentTimeMillis(), HistoryRecord.Action.APPLY, HistoryRecord.Cause.EVENT));
                     }
                 }
                 default -> super.handleMessage(msg);
@@ -167,7 +171,7 @@ public final class ShizukuRemote extends IShizukuRemote.Stub implements Monitor.
             started = true;
 
             synchronized (history) {
-                history.addRecord(new HistoryRecord(System.currentTimeMillis(), HistoryRecord.Action.INJECT, HistoryRecord.Cause.MANUAL));
+                history.addRecord(new HistoryRecord(System.currentTimeMillis(), HistoryRecord.Action.APPLY, HistoryRecord.Cause.MANUAL));
             }
         } catch (final Exception e) {
             Log.e(TAG, "start", e);
@@ -197,7 +201,7 @@ public final class ShizukuRemote extends IShizukuRemote.Stub implements Monitor.
             started = false;
 
             synchronized (history) {
-                history.addRecord(new HistoryRecord(System.currentTimeMillis(), HistoryRecord.Action.REMOVE, HistoryRecord.Cause.MANUAL));
+                history.addRecord(new HistoryRecord(System.currentTimeMillis(), HistoryRecord.Action.RESTORE, HistoryRecord.Cause.MANUAL));
             }
         } catch (final Exception e) {
             Log.e(TAG, "stop", e);
@@ -216,6 +220,33 @@ public final class ShizukuRemote extends IShizukuRemote.Stub implements Monitor.
         synchronized (history) {
             return history.getRecords().toArray(new HistoryRecord[0]);
         }
+    }
+
+    @Override
+    public AppStatus[] listApps() {
+        final List<PackageInfo> packages = context.getPackageManager().getInstalledPackages(0);
+        final List<String> noRestrictApps = MilletCompat.getMilletNoRestrictApps(context);
+        final Set<String> fcmApps = FCMCompat.findAllFCMPackages(context);
+
+        return packages.stream()
+                .filter(pkg -> pkg.applicationInfo != null)
+                .map(pkg -> {
+                    boolean isAllowAutoStart = false;
+                    try {
+                        isAllowAutoStart = AppOpsCompat.isAllowAutoStart(context, pkg.applicationInfo.uid, pkg.packageName);
+                    } catch (final Throwable e) {
+                        Log.e(TAG, "isAllowAutoStart", e);
+                    }
+
+                    return new AppStatus(
+                            pkg.packageName,
+                            (pkg.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0,
+                            fcmApps.contains(pkg.packageName),
+                            FCMCompat.checkInstallFromGooglePlayStore(context, pkg.packageName),
+                            noRestrictApps.contains(pkg.packageName),
+                            isAllowAutoStart
+                    );
+                }).toArray(AppStatus[]::new);
     }
 
     @Override

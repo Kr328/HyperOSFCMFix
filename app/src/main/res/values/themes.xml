@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppActionBar" parent="android:Widget.Material.Light.ActionBar">
-        <item name="android:background">@color/color_background</item>
-    </style>
-
     <style name="AppTheme" parent="android:Theme.Material.Light">
+        <item name="colorOnPrimary">@color/color_on_primary</item>
+        <item name="colorPrimaryContainer">@color/color_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/color_on_primary_container</item>
         <item name="android:colorPrimary">@color/color_primary</item>
         <item name="android:colorPrimaryDark">@color/color_primary</item>
         <item name="android:colorSecondary">@color/color_secondary</item>

@@ -29,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:maxLines="1"
+            android:maxLines="2"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp" />
 
@@ -41,5 +41,33 @@
             android:maxLines="1"
             android:textColor="?android:attr/textColorSecondary"
             android:textSize="14sp" />
+
+        <com.github.kr328.simplefcmfix.ChipFlowLayout
+            android:id="@+id/status_chips"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/status_fcm"
+                style="@style/AppStatusChip"
+                android:text="@string/app_status_fcm" />
+
+            <TextView
+                android:id="@+id/status_play_store"
+                style="@style/AppStatusChip"
+                android:text="@string/app_status_play_store" />
+
+            <TextView
+                android:id="@+id/status_no_restriction"
+                style="@style/AppStatusChip"
+                android:text="@string/app_status_no_restriction" />
+
+            <TextView
+                android:id="@+id/status_autostart"
+                style="@style/AppStatusChip"
+                android:text="@string/app_status_autostart" />
+        </com.github.kr328.simplefcmfix.ChipFlowLayout>
     </LinearLayout>
 </LinearLayout>

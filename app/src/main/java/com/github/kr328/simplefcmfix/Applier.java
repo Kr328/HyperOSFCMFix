@@ -27,13 +27,13 @@ public final class Applier {
         this.context = context;
         this.config = config;
 
-        Log.d(TAG, "Applier* config[autoAllowFCMWakeForPlayStoreApps = " + config.autoAllowFCMWakeForPlayStoreApps + "]");
+        Log.d(TAG, "Applier* config = " + config);
     }
 
     public void setConfig(final ApplierConfig config) {
         this.config = config;
 
-        Log.d(TAG, "setConfig* config[autoAllowFCMWakeForPlayStoreApps = " + config.autoAllowFCMWakeForPlayStoreApps + "]");
+        Log.d(TAG, "setConfig* config = " + config);
     }
 
     private void setAllowAutoStartForPackagesFromPlayStore(final Iterable<String> apps) {
@@ -86,7 +86,7 @@ public final class Applier {
             changed = true;
         }
 
-        if (config.autoAllowFCMWakeForPlayStoreApps) {
+        if (config.autoAllowFCMWakeForPlayStoreApps()) {
             setAllowAutoStartForPackagesFromPlayStore(apps);
         }
 
@@ -97,7 +97,7 @@ public final class Applier {
     }
 
     public void applyAppOps() {
-        if (config.autoAllowFCMWakeForPlayStoreApps) {
+        if (config.autoAllowFCMWakeForPlayStoreApps()) {
             final Set<String> apps = FCMCompat.findAllFCMPackages(context);
 
             setAllowAutoStartForPackagesFromPlayStore(apps);

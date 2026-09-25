@@ -218,8 +218,8 @@ public final class HistoryActivity extends Activity
 
         private int actionTitle(@NonNull final HistoryRecord.Action action) {
             return switch (action) {
-                case INJECT -> R.string.history_action_inject;
-                case REMOVE -> R.string.history_action_remove;
+                case APPLY -> R.string.history_action_apply;
+                case RESTORE -> R.string.history_action_restore;
             };
         }
 

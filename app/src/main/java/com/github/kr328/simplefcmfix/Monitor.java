@@ -106,15 +106,6 @@ public class Monitor {
         }
     }
 
-    private final AlarmManager.OnAlarmListener watchdog = new AlarmManager.OnAlarmListener() {
-        @Override
-        public void onAlarm() {
-            callback.onWatchdogToggle();
-
-            scheduleWatchdogTask();
-        }
-    };
-
     public void stop() {
         try {
             context.getSystemService(AlarmManager.class).cancel(watchdog);
@@ -151,6 +142,15 @@ public class Monitor {
 
         void onAutoStartModeChanged(final String packageName);
     }
+
+    private final AlarmManager.OnAlarmListener watchdog = new AlarmManager.OnAlarmListener() {
+        @Override
+        public void onAlarm() {
+            callback.onWatchdogToggle();
+
+            scheduleWatchdogTask();
+        }
+    };
 
 
 }

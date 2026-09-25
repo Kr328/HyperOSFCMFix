@@ -48,11 +48,8 @@ public final class ConfigProvider extends ContentProvider {
             case "get" -> {
                 final Parcelable data;
                 switch (Objects.requireNonNullElse(arg, "")) {
-                    case APPLIER_CONFIG_KEY -> {
-                        final ApplierConfig cfg = new ApplierConfig();
-                        cfg.autoAllowFCMWakeForPlayStoreApps = applierConfig.getBoolean(AUTO_ALLOW_FCM_WAKE_FOR_PLAY_STORE_APPS, true);
-                        data = cfg;
-                    }
+                    case APPLIER_CONFIG_KEY ->
+                            data = new ApplierConfig(applierConfig.getBoolean(AUTO_ALLOW_FCM_WAKE_FOR_PLAY_STORE_APPS, true));
                     case "" -> throw new IllegalArgumentException("empty key");
                     default -> throw new IllegalArgumentException("unknown key");
                 }
@@ -75,7 +72,7 @@ public final class ConfigProvider extends ContentProvider {
                         }
 
                         final SharedPreferences.Editor editor = applierConfig.edit();
-                        editor.putBoolean(AUTO_ALLOW_FCM_WAKE_FOR_PLAY_STORE_APPS, cfg.autoAllowFCMWakeForPlayStoreApps);
+                        editor.putBoolean(AUTO_ALLOW_FCM_WAKE_FOR_PLAY_STORE_APPS, cfg.autoAllowFCMWakeForPlayStoreApps());
                         editor.apply();
                     }
                     case "" -> throw new IllegalArgumentException("empty key");

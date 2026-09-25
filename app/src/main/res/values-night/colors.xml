@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="color_primary">#D4BBFC</color>
-    <color name="color_secondary">#D4BBFC</color>
-    <color name="color_accent">#D4BBFC</color>
+    <color name="color_primary">#d4bbfc</color>
+    <color name="color_on_primary">#39255b</color>
+    <color name="color_primary_container">#513c74</color>
+    <color name="color_on_primary_container">#ecdcff</color>
+    <color name="color_secondary">#cdc2db</color>
+    <color name="color_accent">#f1b7c4</color>
     <color name="color_background">#151218</color>
-    <color name="color_foreground">#E7E0E8</color>
+    <color name="color_foreground">#e7e0e8</color>
 
-    <color name="color_launcher_foreground">#D4BBFC</color>
-    <color name="color_launcher_background">#503C74</color>
+    <color name="color_launcher_foreground">#d4bbfc</color>
+    <color name="color_launcher_background">#513c74</color>
 </resources>
