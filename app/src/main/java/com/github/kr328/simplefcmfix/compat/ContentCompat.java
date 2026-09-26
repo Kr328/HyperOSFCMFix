@@ -51,7 +51,7 @@ public final class ContentCompat {
         );
     }
 
-    public static void apply() throws ReflectiveOperationException {
+    public static void installDelegate() throws ReflectiveOperationException {
         final Field contentResolverField = ContentResolver.class.getDeclaredField("sContentService");
         contentResolverField.setAccessible(true);
 

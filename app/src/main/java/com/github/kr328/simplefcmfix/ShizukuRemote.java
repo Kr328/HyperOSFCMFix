@@ -34,8 +34,8 @@ public final class ShizukuRemote extends IShizukuRemote.Stub implements Monitor.
         try {
             Log.d(TAG, "applyCompat");
 
-            ActivityCompat.apply();
-            ContentCompat.apply();
+            ActivityCompat.installDelegate();
+            ContentCompat.installDelegate();
         } catch (final Exception e) {
             Log.e(TAG, "ContentProviderCompat.apply*", e);
 

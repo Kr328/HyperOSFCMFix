@@ -3,33 +3,52 @@ package com.github.kr328.simplefcmfix.compat;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.IActivityManager;
-import android.os.IBinder;
+import android.app.IUidObserver;
+import android.os.Process;
+import android.os.ServiceManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.github.kr328.simplefcmfix.refine.Refine;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Objects;
 
 @SuppressWarnings("JavaReflectionMemberAccess")
 @SuppressLint("DiscouragedPrivateApi")
+@Refine
 public class ActivityCompat {
     private static final String TAG = "ActivityManagerCompat";
 
-    @NonNull
-    private static Object createActivityServiceDelegate(@NonNull final Object origin)
-            throws NoSuchMethodException {
-        final Method getContentProviderExternal = origin.getClass().getMethod(
-                "getContentProviderExternal",
-                String.class,
-                int.class,
-                IBinder.class,
-                String.class
-        );
+    private static final IActivityManager activityManager = IActivityManager.Stub.asInterface(ServiceManager.getService("activity"));
 
+    private static int UID_OBSERVER_GONE = 1 << 1;
+    private static int UID_OBSERVER_ACTIVE = 1 << 3;
+
+    static {
+        try {
+            UID_OBSERVER_GONE = getUidObserverGone();
+            UID_OBSERVER_ACTIVE = getUidObserverActive();
+        } catch (final Throwable e) {
+            Log.e(TAG, "Failed to get UID_OBSERVER_GONE or UID_OBSERVER_ACTIVE", e);
+        }
+    }
+
+    @Refine.GetStatic(value = ActivityManager.class, name = "UID_OBSERVER_GONE")
+    private static int getUidObserverGone() {
+        throw new IllegalArgumentException("Stub!");
+    }
+
+    @Refine.GetStatic(value = ActivityManager.class, name = "UID_OBSERVER_ACTIVE")
+    private static int getUidObserverActive() {
+        throw new IllegalArgumentException("Stub!");
+    }
+
+    @NonNull
+    private static Object createActivityServiceDelegate(@NonNull final IActivityManager origin) {
         return Proxy.newProxyInstance(
                 ActivityManager.class.getClassLoader(),
                 new Class[]{IActivityManager.class},
@@ -42,13 +61,7 @@ public class ActivityCompat {
                                 if (actualArgs.length >= 4
                                         && actualArgs[2] instanceof final String name
                                         && actualArgs[3] instanceof final Integer userId) {
-                                    yield getContentProviderExternal.invoke(
-                                            origin,
-                                            name,
-                                            userId,
-                                            null,
-                                            name
-                                    );
+                                    yield origin.getContentProviderExternal(name, userId, null, name);
                                 }
 
                                 yield method.invoke(origin, actualArgs);
@@ -59,7 +72,7 @@ public class ActivityCompat {
                         };
                     } catch (final InvocationTargetException e) {
                         throw e.getTargetException();
-                    } catch (final Exception e) {
+                    } catch (final Throwable e) {
                         Log.w(TAG, "Proxy getContentProviderExternal failed", e);
 
                         return method.invoke(origin, actualArgs);
@@ -68,7 +81,7 @@ public class ActivityCompat {
         );
     }
 
-    public static void apply() throws ReflectiveOperationException {
+    public static void installDelegate() throws ReflectiveOperationException {
         final Field activityManagerField = ActivityManager.class.getDeclaredField("IActivityManagerSingleton");
         activityManagerField.setAccessible(true);
 
@@ -85,7 +98,37 @@ public class ActivityCompat {
         instanceField.setAccessible(true);
         instanceField.set(
                 activityManagerSingleton,
-                createActivityServiceDelegate(activityManager)
+                createActivityServiceDelegate((IActivityManager) activityManager)
         );
+    }
+
+    public static void registerUidObserver(@NonNull final IUidObserverCompat observer) throws Throwable {
+        activityManager.registerUidObserver(observer,
+                UID_OBSERVER_GONE | UID_OBSERVER_ACTIVE,
+                0,
+                android.os.Process.myUid() == Process.SHELL_UID ? "com.android.shell" : "android"
+        );
+    }
+
+    public static void unregisterUidObserver(@NonNull final IUidObserverCompat observer) throws Throwable {
+        activityManager.unregisterUidObserver(observer);
+    }
+
+    public static abstract class IUidObserverCompat extends IUidObserver.Stub {
+        @Override
+        public void onUidIdle(final int uid, final boolean disabled) {
+        }
+
+        @Override
+        public void onUidStateChanged(final int uid, final int procState, final long procStateSeq, final int capability) {
+        }
+
+        @Override
+        public void onUidProcAdjChanged(final int uid, final int adj) {
+        }
+
+        @Override
+        public void onUidCachedChanged(final int uid, final boolean cached) {
+        }
     }
 }

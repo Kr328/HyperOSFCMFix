@@ -4,15 +4,24 @@ import android.content.AttributionSource;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.github.kr328.simplefcmfix.refine.Refine;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.util.Objects;
 
+@Refine
 public final class ContextCompat {
     private ContextCompat() {
     }
 
-    public static void fixContextImplOpPackage(@NonNull final Context context) throws ReflectiveOperationException {
+    @Refine.InvokeVirtual
+    private static AttributionSource withPackageName(@NonNull final AttributionSource source, @Nullable final String packageName) {
+        throw new IllegalArgumentException("Stub!");
+    }
+
+    public static void fixContextImplOpPackage(@NonNull final Context context) throws Throwable {
         final Class<?> contextImpl = context.getClass();
         assert contextImpl.getName().equals("android.app.ContextImpl");
 
@@ -22,8 +31,7 @@ public final class ContextCompat {
         attributionSourceField.setAccessible(true);
         final AttributionSource attributionSource = (AttributionSource) attributionSourceField.get(context);
 
-        final Method withPackageNameMethod = AttributionSource.class.getMethod("withPackageName", String.class);
-        final AttributionSource newAttributionSource = (AttributionSource) withPackageNameMethod.invoke(attributionSource, packageName);
+        final AttributionSource newAttributionSource = withPackageName(Objects.requireNonNull(attributionSource), packageName);
         attributionSourceField.set(context, newAttributionSource);
 
         final Field opPackageField = contextImpl.getDeclaredField("mOpPackageName");

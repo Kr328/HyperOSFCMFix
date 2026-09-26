@@ -2,8 +2,6 @@ package com.github.kr328.simplefcmfix;
 
 import android.app.AppOpsManager;
 import android.content.Context;
-import android.content.pm.IPackageManager;
-import android.os.ServiceManager;
 import android.util.Log;
 import android.util.Pair;
 
@@ -11,6 +9,7 @@ import com.github.kr328.simplefcmfix.compat.AppOpsCompat;
 import com.github.kr328.simplefcmfix.compat.AurogonCompat;
 import com.github.kr328.simplefcmfix.compat.FCMCompat;
 import com.github.kr328.simplefcmfix.compat.MilletCompat;
+import com.github.kr328.simplefcmfix.compat.PackageCompat;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -37,8 +36,6 @@ public final class Applier {
     }
 
     private void setAllowAutoStartForPackagesFromPlayStore(final Iterable<String> apps) {
-        final int userId = context.getApplicationInfo().uid / 100000 /* UserHandle.PER_USER_RANGE */;
-
         for (final String packageName : apps) {
             if (!FCMCompat.checkInstallFromPlayStore(context, packageName)) {
                 continue;
@@ -47,8 +44,7 @@ public final class Applier {
             try {
                 AppOpsCompat.setAutoStartMode(context, packageName, AppOpsManager.MODE_ALLOWED);
 
-                IPackageManager.Stub.asInterface(ServiceManager.getService("package"))
-                        .setPackageStoppedState(packageName, false, userId);
+                PackageCompat.unstop(context, packageName);
 
                 Log.d(TAG, "setAutoStartMode* allowed: " + packageName);
             } catch (final Throwable e) {
@@ -91,7 +87,6 @@ public final class Applier {
         }
 
         FCMCompat.reconnect(context);
-        FCMCompat.unfreeze(context);
 
         return changed;
     }

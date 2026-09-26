@@ -2,17 +2,14 @@ package com.github.kr328.simplefcmfix;
 
 import android.app.AlarmManager;
 import android.app.AppOpsManager;
-import android.app.IActivityManager;
-import android.app.IUidObserver;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Process;
-import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.github.kr328.simplefcmfix.compat.ActivityCompat;
 import com.github.kr328.simplefcmfix.compat.AppOpsCompat;
 import com.github.kr328.simplefcmfix.compat.AurogonCompat;
 import com.github.kr328.simplefcmfix.compat.MilletCompat;
@@ -38,7 +35,7 @@ public class Monitor {
             callback.onAutoStartModeChanged(packageName);
         }
     };
-    private final IUidObserver uidObserver = new IUidObserver.Stub() {
+    private final ActivityCompat.IUidObserverCompat uidObserver = new ActivityCompat.IUidObserverCompat() {
         @Override
         public void onUidGone(final int uid, final boolean disabled) {
             callback.onAnyProcessChanged();
@@ -47,22 +44,6 @@ public class Monitor {
         @Override
         public void onUidActive(final int uid) {
             callback.onAnyProcessChanged();
-        }
-
-        @Override
-        public void onUidIdle(final int uid, final boolean disabled) {
-        }
-
-        @Override
-        public void onUidStateChanged(final int uid, final int procState, final long procStateSeq, final int capability) {
-        }
-
-        @Override
-        public void onUidProcAdjChanged(final int uid, final int adj) {
-        }
-
-        @Override
-        public void onUidCachedChanged(final int uid, final boolean cached) {
         }
     };
 
@@ -84,13 +65,7 @@ public class Monitor {
 
     public void start() {
         try {
-            IActivityManager.Stub.asInterface(ServiceManager.getService("activity"))
-                    .registerUidObserver(
-                            uidObserver,
-                            1 << 1 | 1 << 3 /* UID_OBSERVER_GONE | UID_OBSERVER_ACTIVE */,
-                            0,
-                            android.os.Process.myUid() == Process.SHELL_UID ? "com.android.shell" : "android"
-                    );
+            ActivityCompat.registerUidObserver(uidObserver);
 
             MilletCompat.observeMilletNoRestrictApps(context, observer);
             AurogonCompat.observeAurogonEnable(context, observer);
@@ -120,15 +95,14 @@ public class Monitor {
         }
 
         try {
-            IActivityManager.Stub.asInterface(ServiceManager.getService("activity"))
-                    .unregisterUidObserver(uidObserver);
-        } catch (final Exception e) {
+            ActivityCompat.unregisterUidObserver(uidObserver);
+        } catch (final Throwable e) {
             Log.w(TAG, "unregister uid observer", e);
         }
 
         try {
             AppOpsCompat.stopWatchingAutoStartMode(context, autoStartModeChangedListener);
-        } catch (final Exception e) {
+        } catch (final Throwable e) {
             Log.w(TAG, "stop watching auto start mode", e);
         }
     }
