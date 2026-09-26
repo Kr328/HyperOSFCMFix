@@ -15,6 +15,10 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+base {
+    archivesName = "fcmfix"
+}
+
 android {
     namespace = "com.github.kr328.simplefcmfix"
 
@@ -76,7 +80,8 @@ abstract class RefineTransformer : AsmClassVisitorFactory<InstrumentationParamet
                 signature: String?,
                 exceptions: Array<out String>?,
             ): MethodVisitor {
-                val nextMethodVisitor = super.visitMethod(access, name, descriptor, signature, exceptions)
+                val nextMethodVisitor =
+                    super.visitMethod(access, name, descriptor, signature, exceptions)
 
                 return object : MethodNode(
                     Opcodes.ASM9,
@@ -100,7 +105,8 @@ abstract class RefineTransformer : AsmClassVisitorFactory<InstrumentationParamet
     }
 
     private fun rewriteMethod(className: String, method: MethodNode) {
-        val annotations = method.visibleAnnotations.orEmpty() + method.invisibleAnnotations.orEmpty()
+        val annotations =
+            method.visibleAnnotations.orEmpty() + method.invisibleAnnotations.orEmpty()
         val refinements = annotations.filter { it.desc in refinementAnnotations }
 
         if (refinements.isEmpty()) {
@@ -129,7 +135,11 @@ abstract class RefineTransformer : AsmClassVisitorFactory<InstrumentationParamet
         when (annotation.desc) {
             invokeVirtualAnnotation -> {
                 if (argumentTypes.isEmpty()) {
-                    fail(className, method, "InvokeVirtual requires a receiver as its first parameter")
+                    fail(
+                        className,
+                        method,
+                        "InvokeVirtual requires a receiver as its first parameter"
+                    )
                 }
 
                 val targetName = annotation.targetName(method)
