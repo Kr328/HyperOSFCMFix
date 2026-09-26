@@ -3,4 +3,8 @@
     <attr name="colorOnPrimary" format="color" />
     <attr name="colorPrimaryContainer" format="color" />
     <attr name="colorOnPrimaryContainer" format="color" />
+
+    <declare-styleable name="ChipFlowLayout">
+        <attr name="spacing" format="dimension" />
+    </declare-styleable>
 </resources>

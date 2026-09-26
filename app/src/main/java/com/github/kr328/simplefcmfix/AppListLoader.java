@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
-final class AppListController implements ShizukuHelper.OnStateChangedListener, AutoCloseable {
+final class AppListLoader implements ShizukuHelper.OnStateChangedListener, AutoCloseable {
     @NonNull
     private final Context context;
     @NonNull
@@ -38,7 +38,7 @@ final class AppListController implements ShizukuHelper.OnStateChangedListener, A
     private final AtomicInteger entriesGeneration = new AtomicInteger(0);
     private boolean closed;
 
-    AppListController(@NonNull final Context context, @NonNull final Listener listener) {
+    AppListLoader(@NonNull final Context context, @NonNull final Listener listener) {
         this.context = context;
         this.packageManager = context.getPackageManager();
         this.listener = listener;

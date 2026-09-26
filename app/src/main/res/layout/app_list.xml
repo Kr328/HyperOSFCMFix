@@ -9,7 +9,7 @@
         android:id="@+id/loading_progress"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
-        android:layout_height="8dp"
+        android:layout_height="12dp"
         android:indeterminate="true"
         android:visibility="gone" />
 

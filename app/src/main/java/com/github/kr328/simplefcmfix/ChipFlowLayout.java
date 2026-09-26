@@ -1,6 +1,7 @@
 package com.github.kr328.simplefcmfix;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,12 @@ public final class ChipFlowLayout extends ViewGroup {
 
     public ChipFlowLayout(@NonNull final Context context, @Nullable final AttributeSet attrs) {
         super(context, attrs);
-        spacing = Math.round(6 * getResources().getDisplayMetrics().density);
+
+        try (final TypedArray attributes = context.obtainStyledAttributes(
+                attrs, R.styleable.ChipFlowLayout)) {
+            spacing = attributes.getDimensionPixelSize(
+                    R.styleable.ChipFlowLayout_spacing, 0);
+        }
     }
 
     @Override

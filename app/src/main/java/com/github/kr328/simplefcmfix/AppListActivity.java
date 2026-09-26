@@ -39,7 +39,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 public final class AppListActivity extends Activity
-        implements AppListController.Listener {
+        implements AppListLoader.Listener {
     private static final String STATE_QUERY = "query";
     private static final String STATE_SHOW_SYSTEM = "show_system";
     private static final String STATE_ONLY_FCM = "only_fcm";
@@ -48,7 +48,7 @@ public final class AppListActivity extends Activity
     private static final String STATE_ONLY_AUTOSTART = "only_autostart";
 
     @Nullable
-    private AppListController controller;
+    private AppListLoader controller;
     @Nullable
     private AppListAdapter adapter;
     @Nullable
@@ -56,7 +56,7 @@ public final class AppListActivity extends Activity
     @Nullable
     private ProgressBar loadingProgress;
     @NonNull
-    private List<AppListController.Entry> allEntries = List.of();
+    private List<AppListLoader.Entry> allEntries = List.of();
     @NonNull
     private String query = "";
     private boolean showSystem;
@@ -116,12 +116,12 @@ public final class AppListActivity extends Activity
         loadingProgress = findViewById(R.id.loading_progress);
         final ListView list = findViewById(android.R.id.list);
         list.setDivider(null);
-        controller = new AppListController(this, this);
+        controller = new AppListLoader(this, this);
         adapter = new AppListAdapter(this, controller);
         list.setAdapter(adapter);
         list.setOnItemClickListener((parent, view, position, id) -> {
-            final AppListController.Entry item =
-                    (AppListController.Entry) parent.getItemAtPosition(position);
+            final AppListLoader.Entry item =
+                    (AppListLoader.Entry) parent.getItemAtPosition(position);
 
             try {
                 startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
@@ -211,8 +211,8 @@ public final class AppListActivity extends Activity
         }
 
         final String search = query.toLowerCase(Locale.ROOT);
-        final ArrayList<AppListController.Entry> visible = new ArrayList<>(allEntries.size());
-        for (final AppListController.Entry entry : allEntries) {
+        final ArrayList<AppListLoader.Entry> visible = new ArrayList<>(allEntries.size());
+        for (final AppListLoader.Entry entry : allEntries) {
             final AppStatus status = entry.status();
             if ((!showSystem && status.isSystemApp())
                     || (onlyFcm && !status.supportsFcm())
@@ -237,7 +237,7 @@ public final class AppListActivity extends Activity
     }
 
     @Override
-    public void onEntriesChanged(@NonNull final List<AppListController.Entry> entries) {
+    public void onEntriesChanged(@NonNull final List<AppListLoader.Entry> entries) {
         if (adapter != null && !isDestroyed()) {
             allEntries = List.copyOf(entries);
             updateVisibleEntries();
@@ -259,7 +259,7 @@ public final class AppListActivity extends Activity
 
     @Override
     public void onIconLoaded(
-            @NonNull final AppListController.Entry entry,
+            @NonNull final AppListLoader.Entry entry,
             @NonNull final Drawable icon) {
         if (adapter != null && !isDestroyed()) {
             adapter.setIcon(entry, icon);
@@ -272,19 +272,19 @@ public final class AppListActivity extends Activity
         @NonNull
         private final LayoutInflater inflater;
         @NonNull
-        private final AppListController controller;
+        private final AppListLoader controller;
         @NonNull
-        private final IdentityHashMap<AppListController.Entry, WeakReference<ImageView>>
+        private final IdentityHashMap<AppListLoader.Entry, WeakReference<ImageView>>
                 boundIconViews = new IdentityHashMap<>();
         private final int secondaryTextColor;
         private final int colorPrimaryContainer;
         private final int colorOnPrimaryContainer;
         @NonNull
-        private List<AppListController.Entry> items = List.of();
+        private List<AppListLoader.Entry> items = List.of();
 
         private AppListAdapter(
                 @NonNull final Context context,
-                @NonNull final AppListController controller) {
+                @NonNull final AppListLoader controller) {
             this.context = context;
             this.controller = controller;
             inflater = LayoutInflater.from(context);
@@ -299,14 +299,14 @@ public final class AppListActivity extends Activity
             }
         }
 
-        private void setItems(@NonNull final List<AppListController.Entry> items) {
+        private void setItems(@NonNull final List<AppListLoader.Entry> items) {
             boundIconViews.clear();
             this.items = List.copyOf(items);
             notifyDataSetChanged();
         }
 
         private void setIcon(
-                @NonNull final AppListController.Entry entry,
+                @NonNull final AppListLoader.Entry entry,
                 @NonNull final Drawable icon) {
             final WeakReference<ImageView> reference = boundIconViews.get(entry);
             final ImageView iconView = reference == null ? null : reference.get();
@@ -321,7 +321,7 @@ public final class AppListActivity extends Activity
         }
 
         @Override
-        public AppListController.Entry getItem(final int position) {
+        public AppListLoader.Entry getItem(final int position) {
             return items.get(position);
         }
 
@@ -358,7 +358,7 @@ public final class AppListActivity extends Activity
                 holder = (ViewHolder) view.getTag();
             }
 
-            final AppListController.Entry item = getItem(position);
+            final AppListLoader.Entry item = getItem(position);
             final AppStatus status = item.status();
             holder.icon().setTag(item);
             boundIconViews.put(item, new WeakReference<>(holder.icon()));
