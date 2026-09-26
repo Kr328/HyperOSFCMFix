@@ -107,7 +107,7 @@ abstract class RefineTransformer : AsmClassVisitorFactory<InstrumentationParamet
     private fun rewriteMethod(className: String, method: MethodNode) {
         val annotations =
             method.visibleAnnotations.orEmpty() + method.invisibleAnnotations.orEmpty()
-        val refinements = annotations.filter { it.desc in refinementAnnotations }
+        val refinements = annotations.filter { it.desc in REFINEMENT_ANNOTATIONS }
 
         if (refinements.isEmpty()) {
             return
@@ -133,7 +133,7 @@ abstract class RefineTransformer : AsmClassVisitorFactory<InstrumentationParamet
         method.visitCode()
 
         when (annotation.desc) {
-            invokeVirtualAnnotation -> {
+            INVOKE_VIRTUAL_ANNOTATION -> {
                 if (argumentTypes.isEmpty()) {
                     fail(
                         className,
@@ -168,7 +168,7 @@ abstract class RefineTransformer : AsmClassVisitorFactory<InstrumentationParamet
                 )
             }
 
-            invokeStaticAnnotation -> {
+            INVOKE_STATIC_ANNOTATION -> {
                 val targetName = annotation.targetName(method)
                 val owner = annotation.requiredOwner(className, method)
                 loadArguments(method, argumentTypes)
@@ -181,7 +181,7 @@ abstract class RefineTransformer : AsmClassVisitorFactory<InstrumentationParamet
                 )
             }
 
-            getStaticAnnotation -> {
+            GET_STATIC_ANNOTATION -> {
                 val owner = annotation.requiredOwner(className, method)
                 if (argumentTypes.isNotEmpty()) {
                     fail(className, method, "GetStatic bridge methods cannot have parameters")
@@ -262,9 +262,9 @@ abstract class RefineTransformer : AsmClassVisitorFactory<InstrumentationParamet
     }
 
     private fun annotationName(descriptor: String): String = when (descriptor) {
-        invokeVirtualAnnotation -> "InvokeVirtual"
-        invokeStaticAnnotation -> "InvokeStatic"
-        getStaticAnnotation -> "GetStatic"
+        INVOKE_VIRTUAL_ANNOTATION -> "InvokeVirtual"
+        INVOKE_STATIC_ANNOTATION -> "InvokeStatic"
+        GET_STATIC_ANNOTATION -> "GetStatic"
         else -> descriptor
     }
 
@@ -273,16 +273,16 @@ abstract class RefineTransformer : AsmClassVisitorFactory<InstrumentationParamet
     }
 
     companion object {
-        private const val invokeVirtualAnnotation =
-            "Lcom/github/kr328/simplefcmfix/refine/Refine\$InvokeVirtual;"
-        private const val invokeStaticAnnotation =
-            "Lcom/github/kr328/simplefcmfix/refine/Refine\$InvokeStatic;"
-        private const val getStaticAnnotation =
-            "Lcom/github/kr328/simplefcmfix/refine/Refine\$GetStatic;"
-        private val refinementAnnotations = setOf(
-            invokeVirtualAnnotation,
-            invokeStaticAnnotation,
-            getStaticAnnotation,
+        private const val INVOKE_VIRTUAL_ANNOTATION =
+            $$"Lcom/github/kr328/simplefcmfix/refine/Refine$InvokeVirtual;"
+        private const val INVOKE_STATIC_ANNOTATION =
+            $$"Lcom/github/kr328/simplefcmfix/refine/Refine$InvokeStatic;"
+        private const val GET_STATIC_ANNOTATION =
+            $$"Lcom/github/kr328/simplefcmfix/refine/Refine$GetStatic;"
+        private val REFINEMENT_ANNOTATIONS = setOf(
+            INVOKE_VIRTUAL_ANNOTATION,
+            INVOKE_STATIC_ANNOTATION,
+            GET_STATIC_ANNOTATION,
         )
     }
 }
