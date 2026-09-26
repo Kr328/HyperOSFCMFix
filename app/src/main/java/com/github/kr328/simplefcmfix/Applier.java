@@ -86,6 +86,7 @@ public final class Applier {
             setAllowAutoStartForPackagesFromPlayStore(apps);
         }
 
+        FCMCompat.unfreeze(context);
         FCMCompat.reconnect(context);
 
         return changed;
